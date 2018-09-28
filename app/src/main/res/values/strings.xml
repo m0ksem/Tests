@@ -1,0 +1,69 @@
+<resources>
+    <string name="app_name">Развивающие тесты</string>
+
+    <string name="search">Поиск</string>
+    <string name="create_test">Создать тест</string>
+    <string name="author">Автор</string>
+
+
+
+    <string name="back_button">&lt;</string>
+    <string name="front_button">></string>
+    <string name="add_button">+</string>
+    <string name="delete_button">X</string>
+    <string name="exit_button">X</string>
+
+    <string name="test_question_count">Количество вопросов</string>
+    <string name="test_category">Категория</string>
+
+    <!--Login-->
+    <string name="hello">Здравствуй</string>
+    <string name="hello_under">войди или зарегистрируйся</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="logout">Выход</string>
+    <string name="sign_in_button_text">Авторизация</string>
+    <string name="sign_out_button_text">Регистрация</string>
+    <string name="forgot_password">Забыл пароль?</string>
+
+    <string name="accept">Да</string>
+    <string name="decline">Нет</string>
+
+    <!--HelloUser-->
+    <string name="hello_user_night">Доброй ночи</string>
+    <string name="hello_user_morning">Доброе утро</string>
+    <string name="hello_user_afternoon">Добрый день</string>
+    <string name="hello_user_evening">Добрый вечер</string>
+
+    <!--CreateTest-->
+    <string name="create_test_header">Создайте свой тест</string>
+    <string-array name="create_test_under">
+        <item>Для начала введи название теста</item>
+        <item>Дальше выбери тип теста</item>
+        <item>Главное составить вопросы</item>
+        <item>Осталось только поставить теги</item>
+        <item>Проверь себя на ошибки и можно сохранять</item>
+    </string-array>
+
+    <string name="create_test_choose">Выбрать</string>
+    <string name="create_test_set">Составить список вопросов</string>
+    <string name="create_test_save">Сохранить</string>
+    <string name="create_test_name">Название</string>
+    <string name="create_test_add">Добавить</string>
+
+    <string name="create_test_choose_type">Выбери тип теста</string>
+    <string name="create_test_choose_tags">Выберите теги</string>
+    <string name="create_test_set_question">Составьте список вопросов</string>
+    <string name="create_test_test_results_for_questions">Выберите результаты для теста</string>
+
+
+    <string name="create_test_enter_name">Введите название теста</string>
+    <string name="create_test_enter_tag_name">Введите название тега</string>
+    <string name="create_test_enter_question_text">Введите текст вопроса</string>
+    <string name="create_test_enter_answer">Ответ</string>
+
+    <string name="create_test_type_list">Списком</string>
+    <string name="create_test_type_list_info">Вопросы расположены в виде списка \nОтвечать можно в не по порядку</string>
+    <string name="create_test_type_sequential">Последовательный</string>
+    <string name="create_test_type_sequential_info">Один вопрос на экране  Пока не будет ответа на текущий вопрос, следущий будет не доступен</string>
+</resources>

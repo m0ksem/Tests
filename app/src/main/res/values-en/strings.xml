@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Improve Tests</string>
+    <string name="search">Search</string>
+    <string name="create_test">Create Test</string>
+    <string name="author">Author</string>
+    <string name="test_question_count">Questions count</string>
+    <string name="test_category">Category</string>
+    <string name="hello">Hello</string>
+    <string name="hello_under">login or sign up</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="logout">Logout</string>
+    <string name="sign_in_button_text">Log in</string>
+    <string name="sign_out_button_text">Sign up</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="accept">Yes</string>
+    <string name="decline">No</string>
+    <string name="hello_user_night">Good night</string>
+    <string name="hello_user_morning">Good morning</string>
+    <string name="hello_user_afternoon">Good afternoon</string>
+    <string name="hello_user_evening">Good evening</string>
+    <string name="create_test_header">Create own test</string>
+    <string-array name="create_test_under">
+        <item>At first enter test name</item>
+        <item>Now select test type</item>
+        <item>Set questions</item>
+        <item>Set tags</item>
+        <item>All done, now you can save your test</item>
+    </string-array>
+    <string name="create_test_choose">Select</string>
+    <string name="create_test_set">Make a list of questions</string>
+    <string name="create_test_save">Save</string>
+    <string name="create_test_name">Test name</string>
+    <string name="create_test_add">Add</string>
+    <string name="create_test_choose_type">Choose test type</string>
+    <string name="create_test_choose_tags">Choose tags</string>
+    <string name="create_test_set_question">Make a list of questions</string>
+    <string name="create_test_enter_name">Enter test name</string>
+    <string name="create_test_enter_tag_name">Enter tag</string>
+    <string name="create_test_enter_question_text">Enter question text</string>
+    <string name="create_test_enter_answer">Answer</string>
+    <string name="create_test_type_list">List</string>
+    <string name="create_test_type_list_info">The questions are arranged in the form of a list You can answer in the wrong order</string>
+    <string name="create_test_type_sequential">Sequential</string>
+    <string name="create_test_type_sequential_info">One question on the screen Until there is an answer to the current question, the next one will not be available</string>
+</resources>
