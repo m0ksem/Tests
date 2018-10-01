@@ -39,8 +39,8 @@ class TestsList : AppCompatActivity() {
         helloUser()
         val list = this.findViewById<RecyclerView>(R.id.tests_list)
         list.layoutManager = LinearLayoutManager(this)
-        adapter = TestAdapter(loadData())
-        list.adapter = adapter
+//        adapter = TestAdapter(loadData())
+//        list.adapter = adapter
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -90,14 +90,14 @@ class TestsList : AppCompatActivity() {
         hello_user.text = "$hello, "
     }
 
-    private fun loadData(): ArrayList<Test> {
-        // TODO Сделать подгрузку этого всего из бд с сервера и компановку полученных данных в виде массивов
-        val array: ArrayList<Test> = ArrayList()
-        val t: Test = Test("Психологический тест")
-        t.questions = t.GetQuestions()
-        array.add(Test("name","m0ksem"))
-        return array
-    }
+//    private fun loadData(): ArrayList<Test> {
+//        // TODO Сделать подгрузку этого всего из бд с сервера и компановку полученных данных в виде массивов
+//        val array: ArrayList<Test> = ArrayList()
+//        val t: Test = Test("Психологический тест")
+//        t.questions = t.GetQuestions()
+//        array.add(Test("name","m0ksem"))
+//        return array
+//    }
 
     fun openTest(view: View) {
         val test: Test = view.tag as Test

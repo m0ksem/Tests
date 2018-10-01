@@ -4,6 +4,14 @@
     <string name="search">Search</string>
     <string name="create_test">Create Test</string>
     <string name="author">Author</string>
+
+    <string name="back_button">&lt;</string>
+    <string name="front_button">></string>
+    <string name="add_button">+</string>
+    <string name="delete_button">X</string>
+    <string name="exit_button">X</string>
+
+
     <string name="test_question_count">Questions count</string>
     <string name="test_category">Category</string>
     <string name="hello">Hello</string>
@@ -40,6 +48,7 @@
     <string name="create_test_enter_tag_name">Enter tag</string>
     <string name="create_test_enter_question_text">Enter question text</string>
     <string name="create_test_enter_answer">Answer</string>
+    <string name="create_test_enter_value">Value</string>
     <string name="create_test_type_list">List</string>
     <string name="create_test_type_list_info">The questions are arranged in the form of a list You can answer in the wrong order</string>
     <string name="create_test_type_sequential">Sequential</string>

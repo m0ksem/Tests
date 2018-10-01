@@ -61,6 +61,7 @@
     <string name="create_test_enter_tag_name">Введите название тега</string>
     <string name="create_test_enter_question_text">Введите текст вопроса</string>
     <string name="create_test_enter_answer">Ответ</string>
+    <string name="create_test_enter_value">Значение</string>
 
     <string name="create_test_type_list">Списком</string>
     <string name="create_test_type_list_info">Вопросы расположены в виде списка \nОтвечать можно в не по порядку</string>

@@ -29,10 +29,10 @@ class TestViewActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.test_name).text = test.name
         findViewById<TextView>(R.id.view_test_questions_count).text = test.questions.size.toString()
         findViewById<TextView>(R.id.view_test_author).text = test.author
-        adapter = ViewQuestionAdapter(test.questions)
-        list = this.findViewById(R.id.questions_list)
-        list.layoutManager = LinearLayoutManager(this)
-        list.adapter = adapter
+//        adapter = ViewQuestionAdapter(test.questions)
+//        list = this.findViewById(R.id.questions_list)
+//        list.layoutManager = LinearLayoutManager(this)
+//        list.adapter = adapter
     }
 
     fun back(view: View){

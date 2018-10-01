@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
+import com.example.m0ksem.imprtest.Question
 import com.example.m0ksem.imprtest.R
 import com.example.m0ksem.imprtest.Test
 import com.example.m0ksem.imprtest.TestCreate.ChooseTags.ChooseTags
@@ -24,7 +25,7 @@ class TestCreate : AppCompatActivity() {
     var type: String? = null
     lateinit var tips_view: TextView
     lateinit var tips: Array<String>
-    var questions: ArrayList<ArrayList<String>>? = null
+    var questions: ArrayList<Question>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +52,7 @@ class TestCreate : AppCompatActivity() {
     }
 
     fun setQuestions(view: View) {
+        // TODO() Сделать так чтобы активити нельзя было вызвать если тип не выбран.
         val intent = Intent(this, SetQuestions::class.java)
         intent.putExtra("questions", questions as Serializable)
         startActivityForResult(intent, 2)
@@ -73,7 +75,7 @@ class TestCreate : AppCompatActivity() {
             tips_view.text = tips[2]
         }
         if (requestCode == 2) {
-            questions = data.getSerializableExtra("questions") as ArrayList<ArrayList<String>>
+            questions = data.getSerializableExtra("questions") as ArrayList<Question>
             tips_view.text = tips[3]
         }
         if (requestCode == 3) {
@@ -96,7 +98,7 @@ class TestCreate : AppCompatActivity() {
         else {
             val test_name: String = findViewById<EditText>(R.id.create_test_name).text.toString()
             val user_name: String = intent.getStringExtra("username")
-            val test: Test = Test(test_name, user_name)
+            val test = Test(test_name, user_name)
             test.questions = questions!!
             test.tags = tags!!
             test.type = type!!
