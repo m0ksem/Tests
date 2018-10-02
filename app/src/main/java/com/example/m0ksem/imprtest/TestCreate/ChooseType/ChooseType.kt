@@ -19,7 +19,7 @@ class ChooseType : AppCompatActivity() {
     fun onClick(view: View) {
         when (view.id) {
             R.id.create_test_choose_type_list -> {
-                intent.putExtra("type", "list");
+                intent.putExtra("type", "answers_with_score");
                 setResult(RESULT_OK, intent);
             }
             R.id.create_test_choose_type_sequential -> {

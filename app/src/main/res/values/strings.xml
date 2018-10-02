@@ -50,6 +50,7 @@
     <string name="create_test_save">Сохранить</string>
     <string name="create_test_name">Название</string>
     <string name="create_test_add">Добавить</string>
+    <string name="create_test_get_result">Получить результат</string>
 
     <string name="create_test_choose_type">Выбери тип теста</string>
     <string name="create_test_choose_tags">Выберите теги</string>

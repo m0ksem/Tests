@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST", "UNUSED_PARAMETER")
+
 package com.example.m0ksem.imprtest.TestCreate.SetQuestions
 
 import android.annotation.SuppressLint
@@ -14,30 +16,31 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.example.m0ksem.imprtest.AnswerWithScore
-import com.example.m0ksem.imprtest.Question
+import android.widget.Toast
 import com.example.m0ksem.imprtest.R
+import com.example.m0ksem.imprtest.ScoreTest
+import com.example.m0ksem.imprtest.Test
 import java.io.Serializable
 
 class SetQuestions : AppCompatActivity()  {
 
     private lateinit var adapter: QuestionsAdapter
-    lateinit var list: RecyclerView
+    private lateinit var list: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_set_questions)
-        val questions: ArrayList<Question> = intent.getSerializableExtra("questions") as ArrayList<Question>
-        list = this.findViewById<RecyclerView>(R.id.create_test_questions_list)
+        val questions: ArrayList<Test.Question> = intent.getSerializableExtra("questions") as ArrayList<Test.Question>
+        list = this.findViewById(R.id.create_test_questions_list)
         list.layoutManager = LinearLayoutManager(this)
         adapter = QuestionsAdapter(questions)
         list.adapter = adapter
     }
 
-    fun back(view: View){
-        save()
-        finish()
-    }
+//    fun back(view: View){
+//        save()
+//        finish()
+//    }
 
     override fun onBackPressed() {
         save()
@@ -61,9 +64,9 @@ class SetQuestions : AppCompatActivity()  {
     fun deleteAnswer(view: View) {
         val item: ConstraintLayout = view.parent as ConstraintLayout
         val answers: RecyclerView = view.parent.parent as RecyclerView
-        val answer_pos: Int = answers.getChildAdapterPosition(item)
-        val question_pos: Int = list.getChildAdapterPosition(answers.parent as LinearLayout)
-        adapter.deleteAnswer(question_pos, answer_pos)
+        val answerPos: Int = answers.getChildAdapterPosition(item)
+        val questionPos: Int = list.getChildAdapterPosition(answers.parent as LinearLayout)
+        adapter.deleteAnswer(questionPos, answerPos)
     }
 
     fun save() {
@@ -78,7 +81,8 @@ class SetQuestions : AppCompatActivity()  {
         adapter.delete(pos)
     }
 
-    class QuestionsAdapter(val questions: ArrayList<Question>) : RecyclerView.Adapter<QuestionsAdapter.ViewHolder>() {
+    @Suppress("DEPRECATION")
+    class QuestionsAdapter(val questions: ArrayList<Test.Question>) : RecyclerView.Adapter<QuestionsAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
             return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_questions, parent, false))
         }
@@ -89,14 +93,14 @@ class SetQuestions : AppCompatActivity()  {
         }
 
         fun add(question: String) {
-            val q = Question()
+            val q = Test.Question()
             q.text = question
             questions.add(q)
             notifyDataSetChanged()
         }
 
         fun addAnswer(position: Int , answer: String) {
-            questions[position].answers.add(AnswerWithScore(answer, 0))
+            questions[position].answers.add(ScoreTest.Question.Answer(answer, 0))
             notifyDataSetChanged()
         }
 
@@ -106,10 +110,10 @@ class SetQuestions : AppCompatActivity()  {
         }
 
         override fun onBindViewHolder(view: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
-            view.question_text.text = questions[position].text
+            view.questionText.text = questions[position].text
             view.answers.layoutManager = LinearLayoutManager(view.ctx)
             // TODO() Поменять тип адаптера в зависимости от типа теста
-            view.answers.adapter = AnswersWithScoreAdapter(questions[position].answers as ArrayList<AnswerWithScore>)
+            view.answers.adapter = AnswersWithScoreAdapter(questions[position].answers as ArrayList<ScoreTest.Question.Answer>)
         }
 
         override fun getItemCount(): Int {
@@ -117,11 +121,11 @@ class SetQuestions : AppCompatActivity()  {
         }
 
         inner class ViewHolder(val view: View): RecyclerView.ViewHolder(view) {
-            val question_text = view.findViewById<TextView>(R.id.qustion_name)
-            val answers = view.findViewById<RecyclerView>(R.id.answes)
-            val ctx = view.context
+            val questionText = view.findViewById<TextView>(R.id.qustion_name)!!
+            val answers = view.findViewById<RecyclerView>(R.id.answes)!!
+            val ctx = view.context!!
             init {
-                question_text.addTextChangedListener(object : TextWatcher {
+                questionText.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(p0: Editable?) {
                         questions[position].text = p0.toString()
                     }
@@ -140,9 +144,9 @@ class SetQuestions : AppCompatActivity()  {
                 return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer, parent, false))
             }
 
-            override fun onBindViewHolder(view: ViewHolder, position: Int) {
-                view.answer_text.text = answers[position + 1]
-                view.answer_text.addTextChangedListener(object : TextWatcher {
+            override fun onBindViewHolder(view: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
+                view.answerText.text = answers[position + 1]
+                view.answerText.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(p0: Editable?) {
                         answers[position + 1] = p0.toString()
                     }
@@ -160,18 +164,18 @@ class SetQuestions : AppCompatActivity()  {
             }
 
             class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-                val answer_text = view.findViewById<TextView>(R.id.answer_text)
+                val answerText = view.findViewById<TextView>(R.id.answer_text)!!
             }
         }
 
-        class AnswersWithScoreAdapter(val answers: ArrayList<AnswerWithScore>) : RecyclerView.Adapter<AnswersWithScoreAdapter.ViewHolder>() {
+        class AnswersWithScoreAdapter(val answers: ArrayList<ScoreTest.Question.Answer>) : RecyclerView.Adapter<AnswersWithScoreAdapter.ViewHolder>() {
             override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
                 return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer_with_value, parent, false))
             }
 
             override fun onBindViewHolder(view: ViewHolder, position: Int) {
-                view.answer_text.text = answers[position].text
-                view.answer_value.text = answers[position].score.toString()
+                view.answerText.text = answers[position].text
+                view.answerValue.text = answers[position].score.toString()
 
             }
 
@@ -180,10 +184,10 @@ class SetQuestions : AppCompatActivity()  {
             }
 
             inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-                val answer_text = view.findViewById<TextView>(R.id.answer_text)
-                val answer_value = view.findViewById<TextView>(R.id.answer_value)
+                val answerText = view.findViewById<TextView>(R.id.answer_text)!!
+                val answerValue = view.findViewById<TextView>(R.id.answer_value)!!
                 init {
-                    answer_text.addTextChangedListener(object : TextWatcher {
+                    answerText.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(p0: Editable?) {
                             answers[position].text = p0.toString()
                         }
@@ -194,10 +198,20 @@ class SetQuestions : AppCompatActivity()  {
                         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                         }
                     })
-                    answer_value.addTextChangedListener(object : TextWatcher {
+                    answerValue.addTextChangedListener(object : TextWatcher {
+                        @SuppressLint("ShowToast")
                         override fun afterTextChanged(p0: Editable?) {
                             // TODO() Сделать проверку что это действительно цифра
-                            answers[position].score = p0.toString().toInt()
+                            val inputText: String = p0.toString()
+                            val intInput: Int? = inputText.toIntOrNull()
+                            when {
+                                inputText == "" -> return
+                                intInput == null -> {
+                                    Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
+                                    return
+                                }
+                                else -> answers[position].score = intInput
+                            }
                         }
 
                         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {

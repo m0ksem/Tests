@@ -1,10 +1,11 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package com.example.m0ksem.imprtest.TestList
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -25,11 +26,16 @@ import kotlin.collections.ArrayList
 
 @Suppress("DEPRECATION")
 class TestsList : AppCompatActivity() {
-    var username: String? = null
+    private var username: String? = null
 
-    lateinit var accountPreferences: SharedPreferences
+    private lateinit var accountPreferences: SharedPreferences
 
-    lateinit var adapter: TestAdapter
+    private lateinit var adapter: TestAdapter
+
+    override fun onResume() {
+        super.onResume()
+        helloUser()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +45,8 @@ class TestsList : AppCompatActivity() {
         helloUser()
         val list = this.findViewById<RecyclerView>(R.id.tests_list)
         list.layoutManager = LinearLayoutManager(this)
-//        adapter = TestAdapter(loadData())
-//        list.adapter = adapter
+        adapter = TestAdapter(ArrayList())
+        list.adapter = adapter
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -66,7 +72,7 @@ class TestsList : AppCompatActivity() {
         startActivityForResult(intent, 1)
     }
 
-    fun checkLogin() {
+    private fun checkLogin() {
         username = accountPreferences.getString("login", null)
         if (username == null) {
             val intent = Intent(this, Login::class.java)

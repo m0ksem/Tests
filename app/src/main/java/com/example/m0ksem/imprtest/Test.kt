@@ -1,21 +1,14 @@
 package com.example.m0ksem.imprtest
 
-import android.os.Parcelable
 import java.io.Serializable
 
-class Test(val name: String = "Псих тест", val author: String = "m0ksem") : Serializable {
+open class Test(val name: String = "Псих тест", val author: String = "m0ksem") : Serializable {
 
-    var question_count: Int = 0
+    var questionCount: Int = 0
     lateinit var type: String
-//    lateinit var questions: ArrayList<ArrayList<String>>
     lateinit var questions: ArrayList<Question>
     lateinit var tags: ArrayList<String>
-
-    init {
-        type = "list"
-//        questions = GetQuestions()
-        tags = GetCategories()
-    }
+    lateinit var results: ArrayList<Result>
 
     fun GetQuestions(): ArrayList<ArrayList<String>> {
         // TODO Получение вопросов по ID и преобразование их в такой масив, где первым элементом массива есть вопрос, а остальными ответы
@@ -38,13 +31,35 @@ class Test(val name: String = "Псих тест", val author: String = "m0ksem"
         // TODO Выбор количества вопросов из бд COUNT
         return 0
     }
+
+    open class Question : Serializable {
+        lateinit var text: String
+        var answers: ArrayList<Answer> = ArrayList()
+
+
+        open class Answer(var text: String) : Serializable
+    }
+
+
+    abstract class Result(var text: String) : Serializable
 }
 
-class Question : Serializable {
-    lateinit var text: String
-    var answers: ArrayList<Answer> = ArrayList()
+class ScoreTest(name: String, author: String) : Test(name, author) {
+    class Question : Test.Question() {
+        class Answer(text: String, var score: Int) : Test.Question.Answer(text)
+    }
+
+    class Result(result: String, var min: Int, var max: Int) : Test.Result(result)
+
+    fun getResult(position: Int): String {
+        for (r in results) {
+            val result: ScoreTest.Result = r as Result
+            if (result.min <= position && result.max > position) result.text
+        }
+        return "Пользователь $author не добавил ничего для ваших результатов :("
+    }
 }
 
-abstract class Answer(var text: String) : Serializable
-class AnswerWithScore(text: String, var score: Int) : Answer(text)
-class AnswerWithTextValue(text: String, val value: String) : Answer(text)
+
+//class AnswerWithTextValue(text: String, val value: String) : Test.Answer(text)
+

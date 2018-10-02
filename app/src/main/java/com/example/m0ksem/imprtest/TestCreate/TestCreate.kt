@@ -1,49 +1,48 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package com.example.m0ksem.imprtest.TestCreate
 
 import android.content.Intent
-import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
-import com.example.m0ksem.imprtest.Question
+import android.widget.Toast
 import com.example.m0ksem.imprtest.R
+import com.example.m0ksem.imprtest.ScoreTest
 import com.example.m0ksem.imprtest.Test
 import com.example.m0ksem.imprtest.TestCreate.ChooseTags.ChooseTags
 import com.example.m0ksem.imprtest.TestCreate.ChooseType.ChooseType
 import com.example.m0ksem.imprtest.TestCreate.SetQuestions.SetQuestions
-import kotlinx.android.synthetic.main.activity_tests_list.*
-import org.w3c.dom.Text
 import java.io.Serializable
 
 class TestCreate : AppCompatActivity() {
 
-    var tags: ArrayList<String>? = null
+    private var tags: ArrayList<String>? = null
     var type: String? = null
-    lateinit var tips_view: TextView
-    lateinit var tips: Array<String>
-    var questions: ArrayList<Question>? = null
+    private lateinit var tipsView: TextView
+    private lateinit var tips: Array<String>
+    private var questions: ArrayList<Test.Question>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_create)
         tags = ArrayList()
         questions = ArrayList()
-        tips_view = findViewById<TextView>(R.id.create_test_tips)
+        tipsView = findViewById(R.id.create_test_tips)
         tips = resources.getStringArray(R.array.create_test_under)
-        tips_view.text = tips[0]
+        tipsView.text = tips[0]
     }
 
     fun nameEnter(view: View) {
-        tips_view.text = tips[1]
+        tipsView.text = tips[1]
     }
 
-    fun back(view: View){
-        finish()
-    }
+//    fun back(view: View){
+//        finish()
+//    }
 
     fun chooseType(view: View) {
         val intent = Intent(this, ChooseType::class.java)
@@ -72,36 +71,38 @@ class TestCreate : AppCompatActivity() {
         }
         if (requestCode == 1){
             type = data.getStringExtra("type")
-            tips_view.text = tips[2]
+            tipsView.text = tips[2]
         }
         if (requestCode == 2) {
-            questions = data.getSerializableExtra("questions") as ArrayList<Question>
-            tips_view.text = tips[3]
+            @Suppress("UNCHECKED_CAST")
+            questions = data.getSerializableExtra("questions") as ArrayList<Test.Question>
+            tipsView.text = tips[3]
         }
         if (requestCode == 3) {
             tags = data.getStringArrayListExtra("tags")
-            tips_view.text = tips[4]
+            tipsView.text = tips[4]
             Log.d("Debug", "Tags returned")
         }
     }
 
     fun save(view: View) {
-        if (type == null) {
-            return
-        }
-        else if (questions == null) {
-            return
-        }
-        else if (tags == null) {
+        if (type == null || questions == null || tags == null) {
+            Toast.makeText(view.context, "End your test creation", Toast.LENGTH_SHORT).show()
             return
         }
         else {
-            val test_name: String = findViewById<EditText>(R.id.create_test_name).text.toString()
-            val user_name: String = intent.getStringExtra("username")
-            val test = Test(test_name, user_name)
-            test.questions = questions!!
-            test.tags = tags!!
-            test.type = type!!
+            val testName: String = (findViewById<View>(R.id.create_test_name) as EditText).text.toString()
+            val userName: String = intent.getStringExtra("username")
+            val test = when (type) {
+                "answers_with_score" -> ScoreTest(testName, userName)
+                else -> Test(testName, userName)
+            }
+            if (test is ScoreTest) {
+                test.questions = questions!!
+                test.tags = tags!!
+                test.type = type!!
+                test.results = ArrayList()
+            }
             intent.putExtra("test", test as Serializable)
             setResult(RESULT_OK, intent)
             finish()
