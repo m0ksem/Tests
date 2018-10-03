@@ -68,4 +68,6 @@
     <string name="create_test_type_list_info">Вопросы расположены в виде списка \nОтвечать можно в не по порядку</string>
     <string name="create_test_type_sequential">Последовательный</string>
     <string name="create_test_type_sequential_info">Один вопрос на экране  Пока не будет ответа на текущий вопрос, следущий будет не доступен</string>
+
+
 </resources>

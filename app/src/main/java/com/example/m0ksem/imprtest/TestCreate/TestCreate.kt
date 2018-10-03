@@ -15,7 +15,7 @@ import com.example.m0ksem.imprtest.ScoreTest
 import com.example.m0ksem.imprtest.Test
 import com.example.m0ksem.imprtest.TestCreate.ChooseTags.ChooseTags
 import com.example.m0ksem.imprtest.TestCreate.ChooseType.ChooseType
-import com.example.m0ksem.imprtest.TestCreate.SetQuestions.SetQuestions
+import com.example.m0ksem.imprtest.TestCreate.SetResults.SetResults
 import java.io.Serializable
 
 class TestCreate : AppCompatActivity() {
@@ -25,6 +25,7 @@ class TestCreate : AppCompatActivity() {
     private lateinit var tipsView: TextView
     private lateinit var tips: Array<String>
     private var questions: ArrayList<Test.Question>? = null
+    private var results: ArrayList<Test.Result>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +53,7 @@ class TestCreate : AppCompatActivity() {
 
     fun setQuestions(view: View) {
         // TODO() Сделать так чтобы активити нельзя было вызвать если тип не выбран.
-        val intent = Intent(this, SetQuestions::class.java)
+        val intent = Intent(this, SetResults::class.java)
         intent.putExtra("questions", questions as Serializable)
         startActivityForResult(intent, 2)
     }
@@ -61,6 +62,15 @@ class TestCreate : AppCompatActivity() {
         val intent = Intent(this, ChooseTags::class.java)
         intent.putExtra("tags", tags)
         startActivityForResult(intent, 3)
+    }
+
+    fun setResults(view: View) {
+        if (type == "answers_with_score") {
+            val intent = Intent(this, SetResults::class.java)
+            intent.putExtra("type", "answer_with_score")
+            intent.putExtra("results", results)
+            startActivityForResult(intent, 4)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -82,6 +92,10 @@ class TestCreate : AppCompatActivity() {
             tags = data.getStringArrayListExtra("tags")
             tipsView.text = tips[4]
             Log.d("Debug", "Tags returned")
+        }
+        if (requestCode == 3) {
+            tags = data.getStringArrayListExtra("results")
+            tipsView.text = tips[4]
         }
     }
 

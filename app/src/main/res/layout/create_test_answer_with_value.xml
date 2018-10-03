@@ -22,7 +22,7 @@
         android:paddingRight="15dp"
         android:paddingBottom="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/delete_answer"
+        app:layout_constraintEnd_toStartOf="@+id/delete_result"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
@@ -45,7 +45,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/delete_answer"
+        android:id="@+id/delete_result"
         android:layout_width="31dp"
         android:layout_height="31dp"
         android:layout_marginTop="2dp"

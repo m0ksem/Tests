@@ -41,7 +41,7 @@ open class Test(val name: String = "Псих тест", val author: String = "m0
     }
 
 
-    abstract class Result(var text: String) : Serializable
+    open class Result(var text: String) : Serializable
 }
 
 class ScoreTest(name: String, author: String) : Test(name, author) {
