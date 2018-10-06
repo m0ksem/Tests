@@ -51,23 +51,21 @@
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
         <EditText
             android:id="@+id/min"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:background="@drawable/input"
-            android:hint="@string/create_test_enter_question_text"
+            android:hint="@string/create_test_min"
             android:inputType="text"
             android:paddingBottom="5dp"
             android:paddingLeft="15dp"
@@ -77,10 +75,10 @@
 
         <EditText
             android:id="@+id/max"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/input"
-            android:hint="@string/create_test_enter_question_text"
+            android:hint="@string/create_test_max"
             android:inputType="text"
             android:paddingBottom="5dp"
             android:paddingLeft="15dp"

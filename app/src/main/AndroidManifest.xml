@@ -25,10 +25,14 @@
         <activity android:name=".TestView.TestViewActivity" />
         <activity android:name=".TestCreate.TestCreate"
             android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".TestCreate.ChooseType.ChooseType" />
+        <activity android:name=".TestCreate.ChooseType.ChooseType"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".TestCreate.SetQuestions.SetQuestions"
+            android:windowSoftInputMode="adjustResize"></activity>
         <activity android:name=".TestCreate.ChooseTags.ChooseTags"
             android:windowSoftInputMode="adjustResize"></activity>
-        <activity android:name=".TestCreate.SetResults.SetResults" />
+        <activity android:name=".TestCreate.SetResults.SetResults"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient"
-    tools:context=".TestCreate.ChooseTags.ChooseTags">
+    tools:context=".TestCreate.SetResults.SetResults">
 
     <LinearLayout
         android:id="@+id/linearLayout7"
@@ -87,7 +87,7 @@
             android:layout_marginEnd="8dp"
             android:background="@drawable/button_bg_gradient"
             android:gravity="center_vertical|center"
-            android:onClick="addQuestion"
+            android:onClick="addResult"
             android:text="@string/add_button"
             android:textAlignment="center"
             android:textColor="@color/colorTextOnButtons"

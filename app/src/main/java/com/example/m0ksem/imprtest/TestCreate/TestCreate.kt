@@ -15,6 +15,7 @@ import com.example.m0ksem.imprtest.ScoreTest
 import com.example.m0ksem.imprtest.Test
 import com.example.m0ksem.imprtest.TestCreate.ChooseTags.ChooseTags
 import com.example.m0ksem.imprtest.TestCreate.ChooseType.ChooseType
+import com.example.m0ksem.imprtest.TestCreate.SetQuestions.SetQuestions
 import com.example.m0ksem.imprtest.TestCreate.SetResults.SetResults
 import java.io.Serializable
 
@@ -53,7 +54,7 @@ class TestCreate : AppCompatActivity() {
 
     fun setQuestions(view: View) {
         // TODO() Сделать так чтобы активити нельзя было вызвать если тип не выбран.
-        val intent = Intent(this, SetResults::class.java)
+        val intent = Intent(this, SetQuestions::class.java)
         intent.putExtra("questions", questions as Serializable)
         startActivityForResult(intent, 2)
     }
@@ -93,8 +94,8 @@ class TestCreate : AppCompatActivity() {
             tipsView.text = tips[4]
             Log.d("Debug", "Tags returned")
         }
-        if (requestCode == 3) {
-            tags = data.getStringArrayListExtra("results")
+        if (requestCode == 4) {
+            results = data.getStringArrayListExtra("results") as ArrayList<Test.Result>
             tipsView.text = tips[4]
         }
     }
@@ -115,7 +116,7 @@ class TestCreate : AppCompatActivity() {
                 test.questions = questions!!
                 test.tags = tags!!
                 test.type = type!!
-                test.results = ArrayList()
+                test.results = results!!
             }
             intent.putExtra("test", test as Serializable)
             setResult(RESULT_OK, intent)

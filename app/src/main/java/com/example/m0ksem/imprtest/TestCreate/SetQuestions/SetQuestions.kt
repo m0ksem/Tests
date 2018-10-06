@@ -1,5 +1,3 @@
-@file:Suppress("UNCHECKED_CAST", "UNUSED_PARAMETER")
-
 package com.example.m0ksem.imprtest.TestCreate.SetQuestions
 
 import android.annotation.SuppressLint
@@ -10,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,9 +47,9 @@ class SetQuestions : AppCompatActivity()  {
     }
 
     fun addQuestion(view: View) {
-        val input: EditText = findViewById(R.id.new_tag_input)
-        adapter.add(input.text.toString())
-        input.setText("")
+//        val input: EditText = findViewById(R.id.new_tag_input)
+        adapter.add("")
+//        input.setText("")
     }
 
     fun addAnswer(view: View) {
@@ -70,6 +69,23 @@ class SetQuestions : AppCompatActivity()  {
     }
 
     fun save() {
+        val removed = ArrayList<Test.Question>()
+        for (q in adapter.questions) {
+            val removedAnswers = ArrayList<Test.Question.Answer>()
+            for (a in q.answers) {
+                if (a.text == "") {
+                    removedAnswers.add(a)
+                }
+            }
+            q.answers.removeAll(removedAnswers)
+            if (q.text == "" && q.answers.size != 0) {
+                Toast.makeText(this, "У вас есть пустыее вопросы. Введите их", Toast.LENGTH_LONG).show()
+            }
+            else if (q.answers.size == 0 && q.text == "") {
+                removed.add(q)
+            }
+        }
+        adapter.questions.removeAll(removed)
         intent.putExtra("questions", adapter.questions as Serializable)
         setResult(RESULT_OK, intent)
         finish()

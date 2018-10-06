@@ -1,5 +1,6 @@
 package com.example.m0ksem.imprtest
 
+import android.util.Log
 import java.io.Serializable
 
 open class Test(val name: String = "Псих тест", val author: String = "m0ksem") : Serializable {
@@ -54,7 +55,8 @@ class ScoreTest(name: String, author: String) : Test(name, author) {
     fun getResult(position: Int): String {
         for (r in results) {
             val result: ScoreTest.Result = r as Result
-            if (result.min <= position && result.max > position) result.text
+            Log.d("Result $r", "text: ${r.text}, min ${r.min}, max ${r.max}")
+            if (result.min <= position && result.max > position) return result.text
         }
         return "Пользователь $author не добавил ничего для ваших результатов :("
     }

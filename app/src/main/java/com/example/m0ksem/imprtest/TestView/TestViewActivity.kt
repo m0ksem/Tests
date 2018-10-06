@@ -47,6 +47,10 @@ class TestViewActivity : AppCompatActivity() {
         var result = ""
         if (test is ScoreTest) {
             val a = getUserAnswersScores()
+            if (a == null) {
+                Toast.makeText(this, "Вы не ответили на все вопросы", Toast.LENGTH_LONG).show()
+                return
+            }
             var sum = 0
             for (i in a) {
                 sum += i
@@ -56,11 +60,14 @@ class TestViewActivity : AppCompatActivity() {
         Toast.makeText(this, result, Toast.LENGTH_LONG).show()
     }
 
-    private fun getUserAnswersScores() : ArrayList<Int> {
+    private fun getUserAnswersScores() : ArrayList<Int>? {
         val scores: ArrayList<Int> = ArrayList()
         for (i: Int in 0 until adapter.itemCount) {
             val q: AdapterAnswersWithScore.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswersWithScore.ViewHolder
             val a: AdapterAnswersWithScore.ViewAnswerAdapter = q.answers.adapter as AdapterAnswersWithScore.ViewAnswerAdapter
+            if (a.selectedAnswer == -1) {
+                return null
+            }
             val ans = test.questions[i].answers[a.selectedAnswer] as ScoreTest.Question.Answer
             scores.add(ans.score)
         }

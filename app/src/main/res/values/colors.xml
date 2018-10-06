@@ -8,7 +8,7 @@
     <color name="colorTextOnButtons">#ffffff</color>
 
     <color name="colorBackground">#ffffff</color>
-    <color name="colorBackgroundDarken">#eeeeee</color>
+    <color name="colorBackgroundDarken">#0a000000</color>
 
     <color name="colorText">#424242</color>
     <color name="colorTextHeader">#212121</color>

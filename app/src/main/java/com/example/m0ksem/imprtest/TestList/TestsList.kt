@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import com.example.m0ksem.imprtest.Login
 import com.example.m0ksem.imprtest.R
+import com.example.m0ksem.imprtest.ScoreTest
 import com.example.m0ksem.imprtest.Test
 import com.example.m0ksem.imprtest.TestCreate.TestCreate
 import com.example.m0ksem.imprtest.TestView.TestViewActivity
@@ -45,7 +46,7 @@ class TestsList : AppCompatActivity() {
         helloUser()
         val list = this.findViewById<RecyclerView>(R.id.tests_list)
         list.layoutManager = LinearLayoutManager(this)
-        adapter = TestAdapter(ArrayList())
+        adapter = TestAdapter(loadData())
         list.adapter = adapter
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -96,14 +97,24 @@ class TestsList : AppCompatActivity() {
         hello_user.text = "$hello, "
     }
 
-//    private fun loadData(): ArrayList<Test> {
-//        // TODO Сделать подгрузку этого всего из бд с сервера и компановку полученных данных в виде массивов
-//        val array: ArrayList<Test> = ArrayList()
-//        val t: Test = Test("Психологический тест")
-//        t.questions = t.GetQuestions()
-//        array.add(Test("name","m0ksem"))
-//        return array
-//    }
+    private fun loadData(): ArrayList<Test> {
+        // TODO Сделать подгрузку этого всего из бд с сервера и компановку полученных данных в виде массивов
+        val array: ArrayList<Test> = ArrayList()
+        val t: Test = ScoreTest("Психологический тест", "ImproveTests")
+        t.type = "answers_with_score"
+        t.tags = arrayListOf("tag", "tag2")
+        val q = ScoreTest.Question()
+        q.text = "Как вы себя чувствуете?"
+        val a1 =  ScoreTest.Question.Answer("Нормально", 1)
+        val a2 =  ScoreTest.Question.Answer("Очень плохо", 0)
+        q.answers = arrayListOf(a1, a2)
+        var r1 = ScoreTest.Result("Всё хорошо, проходите тесты дальше, если их нет - создайте", 1, 2)
+        var r2 = ScoreTest.Result("Всё очень плохо, Вам нужно проходить наши тесты! Если их нет - создайте", 0, 1)
+        t.results = arrayListOf(r1, r2)
+        t.questions = arrayListOf(q)
+        array.add(t)
+        return array
+    }
 
     fun openTest(view: View) {
         val test: Test = view.tag as Test

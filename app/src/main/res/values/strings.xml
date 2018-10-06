@@ -63,9 +63,11 @@
     <string name="create_test_enter_question_text">Введите текст вопроса</string>
     <string name="create_test_enter_answer">Ответ</string>
     <string name="create_test_enter_value">Значение</string>
+    <string name="create_test_max">Макс.</string>
+    <string name="create_test_min">Мин.</string>
 
-    <string name="create_test_type_list">Списком</string>
-    <string name="create_test_type_list_info">Вопросы расположены в виде списка \nОтвечать можно в не по порядку</string>
+    <string name="create_test_type_score">Ответы с баллами</string>
+    <string name="create_test_type_score_info">За каждый ответ начисляется балл, в зависимости от выбраного результата\nПосле прохождения теста показывается результат в зависимости от суммы набраных баллов</string>
     <string name="create_test_type_sequential">Последовательный</string>
     <string name="create_test_type_sequential_info">Один вопрос на экране  Пока не будет ответа на текущий вопрос, следущий будет не доступен</string>
 

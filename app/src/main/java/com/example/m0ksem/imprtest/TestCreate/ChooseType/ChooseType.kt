@@ -22,10 +22,6 @@ class ChooseType : AppCompatActivity() {
                 intent.putExtra("type", "answers_with_score");
                 setResult(RESULT_OK, intent);
             }
-            R.id.create_test_choose_type_sequential -> {
-                intent.putExtra("type", "sequential");
-                setResult(RESULT_OK, intent);
-            }
         }
         finish()
     }
