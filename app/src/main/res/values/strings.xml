@@ -10,8 +10,8 @@
     <string name="back_button">&lt;</string>
     <string name="front_button">></string>
     <string name="add_button">+</string>
-    <string name="delete_button">X</string>
-    <string name="exit_button">X</string>
+    <string name="delete_button">✖</string>
+    <string name="exit_button">✖</string>
 
     <string name="test_question_count">Количество вопросов</string>
     <string name="test_category">Категория</string>
@@ -61,6 +61,7 @@
     <string name="create_test_enter_name">Введите название теста</string>
     <string name="create_test_enter_tag_name">Введите название тега</string>
     <string name="create_test_enter_question_text">Введите текст вопроса</string>
+    <string name="create_test_enter_result_text">Введите текст результата</string>
     <string name="create_test_enter_answer">Ответ</string>
     <string name="create_test_enter_value">Значение</string>
     <string name="create_test_max">Макс.</string>

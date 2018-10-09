@@ -12,10 +12,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.Animation
+import android.view.animation.Transformation
+import android.widget.*
 import com.example.m0ksem.imprtest.R
 import com.example.m0ksem.imprtest.ScoreTest
 import com.example.m0ksem.imprtest.Test
@@ -36,10 +36,38 @@ class SetQuestions : AppCompatActivity()  {
         list.adapter = adapter
     }
 
-//    fun back(view: View){
-//        save()
-//        finish()
-//    }
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (hasFocus) {
+            val header: ConstraintLayout = this.findViewById(R.id.header)!!
+            val startHeight: Int = header.height + 20
+            val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
+            animation.interpolator = AccelerateInterpolator()
+            animation.duration = 300
+            header.animation = animation
+            header.startAnimation(animation)
+        }
+    }
+
+    inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
+        override fun applyTransformation(interpolatedTime: Float, transformation: Transformation) {
+            val newHeight: Int
+
+            if (mView.height != mToHeight) {
+                newHeight = (mFromHeight + (mToHeight - mFromHeight) * interpolatedTime).toInt()
+                mView.layoutParams.height = newHeight
+                mView.requestLayout()
+            }
+        }
+
+        override fun willChangeBounds(): Boolean {
+            return true
+        }
+    }
+
+    fun back(view: View){
+        save()
+        finish()
+    }
 
     override fun onBackPressed() {
         save()
@@ -47,9 +75,7 @@ class SetQuestions : AppCompatActivity()  {
     }
 
     fun addQuestion(view: View) {
-//        val input: EditText = findViewById(R.id.new_tag_input)
         adapter.add("")
-//        input.setText("")
     }
 
     fun addAnswer(view: View) {
@@ -58,6 +84,7 @@ class SetQuestions : AppCompatActivity()  {
         val pos: Int = list.getChildAdapterPosition(item)
         adapter.addAnswer(pos, input.text.toString())
         input.setText("")
+
     }
 
     fun deleteAnswer(view: View) {
@@ -98,7 +125,7 @@ class SetQuestions : AppCompatActivity()  {
     }
 
     @Suppress("DEPRECATION")
-    class QuestionsAdapter(val questions: ArrayList<Test.Question>) : RecyclerView.Adapter<QuestionsAdapter.ViewHolder>() {
+    inner class QuestionsAdapter(val questions: ArrayList<Test.Question>) : RecyclerView.Adapter<QuestionsAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
             return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_questions, parent, false))
         }
@@ -138,6 +165,7 @@ class SetQuestions : AppCompatActivity()  {
 
         inner class ViewHolder(val view: View): RecyclerView.ViewHolder(view) {
             val questionText = view.findViewById<TextView>(R.id.qustion_name)!!
+            val lastText = questionText.text.toString()
             val answers = view.findViewById<RecyclerView>(R.id.answes)!!
             val ctx = view.context!!
             init {
@@ -155,36 +183,36 @@ class SetQuestions : AppCompatActivity()  {
             }
         }
 
-        class AnswersAdapter(val answers: ArrayList<String>) : RecyclerView.Adapter<AnswersAdapter.ViewHolder>() {
-            override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
-                return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer, parent, false))
-            }
+//        abstract class AnswersAdapter(val answers: ArrayList<String>) : RecyclerView.Adapter<AnswersAdapter.ViewHolder>() {
+//            override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
+//                return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer, parent, false))
+//            }
+//
+//            override fun onBindViewHolder(view: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
+//                view.answerText.text = answers[position + 1]
+//                view.answerText.addTextChangedListener(object : TextWatcher {
+//                    override fun afterTextChanged(p0: Editable?) {
+//                        answers[position + 1] = p0.toString()
+//                    }
+//
+//                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+//                    }
+//
+//                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+//                    }
+//                })
+//            }
+//
+//            override fun getItemCount(): Int {
+//                return answers.size - 1
+//            }
+//
+//            class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+//                val answerText = view.findViewById<TextView>(R.id.answer_text)!!
+//            }
+//        }
 
-            override fun onBindViewHolder(view: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
-                view.answerText.text = answers[position + 1]
-                view.answerText.addTextChangedListener(object : TextWatcher {
-                    override fun afterTextChanged(p0: Editable?) {
-                        answers[position + 1] = p0.toString()
-                    }
-
-                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    }
-
-                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    }
-                })
-            }
-
-            override fun getItemCount(): Int {
-                return answers.size - 1
-            }
-
-            class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-                val answerText = view.findViewById<TextView>(R.id.answer_text)!!
-            }
-        }
-
-        class AnswersWithScoreAdapter(val answers: ArrayList<ScoreTest.Question.Answer>) : RecyclerView.Adapter<AnswersWithScoreAdapter.ViewHolder>() {
+        inner class AnswersWithScoreAdapter(val answers: ArrayList<ScoreTest.Question.Answer>) : RecyclerView.Adapter<AnswersWithScoreAdapter.ViewHolder>() {
             override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
                 return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer_with_value, parent, false))
             }
@@ -201,6 +229,7 @@ class SetQuestions : AppCompatActivity()  {
 
             inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
                 val answerText = view.findViewById<TextView>(R.id.answer_text)!!
+                val lastText = answerText.text.toString()
                 val answerValue = view.findViewById<TextView>(R.id.answer_value)!!
                 init {
                     answerText.addTextChangedListener(object : TextWatcher {
@@ -217,7 +246,6 @@ class SetQuestions : AppCompatActivity()  {
                     answerValue.addTextChangedListener(object : TextWatcher {
                         @SuppressLint("ShowToast")
                         override fun afterTextChanged(p0: Editable?) {
-                            // TODO() Сделать проверку что это действительно цифра
                             val inputText: String = p0.toString()
                             val intInput: Int? = inputText.toIntOrNull()
                             when {

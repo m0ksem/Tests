@@ -11,6 +11,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.Animation
+import android.view.animation.Transformation
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -52,17 +55,45 @@ class SetResults : AppCompatActivity() {
         }
     }
 
-//    fun back(view: View){
-//        save()
-//        finish()
-//    }
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (hasFocus) {
+            val header: ConstraintLayout = this.findViewById(R.id.header)!!
+            val startHeight: Int = header.height + 20
+            val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
+            animation.interpolator = AccelerateInterpolator()
+            animation.duration = 300
+            header.animation = animation
+            header.startAnimation(animation)
+        }
+    }
+
+    inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
+        override fun applyTransformation(interpolatedTime: Float, transformation: Transformation) {
+            val newHeight: Int
+
+            if (mView.height != mToHeight) {
+                newHeight = (mFromHeight + (mToHeight - mFromHeight) * interpolatedTime).toInt()
+                mView.layoutParams.height = newHeight
+                mView.requestLayout()
+            }
+        }
+
+        override fun willChangeBounds(): Boolean {
+            return true
+        }
+    }
+
+    fun back(view: View){
+        save()
+        finish()
+    }
 
     override fun onBackPressed() {
         save()
         super.onBackPressed()
     }
 
-    fun deleteTag(view: View) {
+    fun deleteResult(view: View) {
         val item: ConstraintLayout = view.parent as ConstraintLayout
         val pos: Int = tags_list.getChildAdapterPosition(item)
         adapter.delete(pos)

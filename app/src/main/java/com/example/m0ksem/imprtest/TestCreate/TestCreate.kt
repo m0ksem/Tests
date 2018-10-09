@@ -5,9 +5,14 @@ package com.example.m0ksem.imprtest.TestCreate
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.util.Log
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.Animation
+import android.view.animation.Transformation
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.example.m0ksem.imprtest.R
@@ -19,6 +24,7 @@ import com.example.m0ksem.imprtest.TestCreate.SetQuestions.SetQuestions
 import com.example.m0ksem.imprtest.TestCreate.SetResults.SetResults
 import java.io.Serializable
 
+@Suppress("UNCHECKED_CAST")
 class TestCreate : AppCompatActivity() {
 
     private var tags: ArrayList<String>? = null
@@ -42,27 +48,32 @@ class TestCreate : AppCompatActivity() {
         tipsView.text = tips[1]
     }
 
-//    fun back(view: View){
-//        finish()
-//    }
+    fun back(view: View){
+        finish()
+    }
 
     fun chooseType(view: View) {
         val intent = Intent(this, ChooseType::class.java)
+        intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
         startActivityForResult(intent, 1)
-
+        overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
     }
 
     fun setQuestions(view: View) {
         // TODO() Сделать так чтобы активити нельзя было вызвать если тип не выбран.
         val intent = Intent(this, SetQuestions::class.java)
         intent.putExtra("questions", questions as Serializable)
+        intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
         startActivityForResult(intent, 2)
+        overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
     }
 
     fun chooseTags(view: View) {
         val intent = Intent(this, ChooseTags::class.java)
+        intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
         intent.putExtra("tags", tags)
         startActivityForResult(intent, 3)
+        overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
     }
 
     fun setResults(view: View) {
@@ -70,8 +81,10 @@ class TestCreate : AppCompatActivity() {
             val intent = Intent(this, SetResults::class.java)
             intent.putExtra("type", "answer_with_score")
             intent.putExtra("results", results)
+            intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
             startActivityForResult(intent, 4)
         }
+        overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -85,14 +98,12 @@ class TestCreate : AppCompatActivity() {
             tipsView.text = tips[2]
         }
         if (requestCode == 2) {
-            @Suppress("UNCHECKED_CAST")
             questions = data.getSerializableExtra("questions") as ArrayList<Test.Question>
             tipsView.text = tips[3]
         }
         if (requestCode == 3) {
             tags = data.getStringArrayListExtra("tags")
             tipsView.text = tips[4]
-            Log.d("Debug", "Tags returned")
         }
         if (requestCode == 4) {
             results = data.getStringArrayListExtra("results") as ArrayList<Test.Result>

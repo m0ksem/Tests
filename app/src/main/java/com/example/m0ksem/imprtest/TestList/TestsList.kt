@@ -2,6 +2,7 @@
 
 package com.example.m0ksem.imprtest.TestList
 
+import android.animation.LayoutTransition
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -9,10 +10,14 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.animation.AnimationUtils
+import android.widget.TextView
 import android.widget.Toast
 import com.example.m0ksem.imprtest.Login
 import com.example.m0ksem.imprtest.R
@@ -55,6 +60,9 @@ class TestsList : AppCompatActivity() {
             window.navigationBarColor = resources.getColor(R.color.colorBackground)
             window.statusBarColor = resources.getColor(R.color.colorBackground)
         }
+
+        val button = this.findViewById<ConstraintLayout>(R.id.nav_bar)!!
+        button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.open_activity_button_up))
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -93,7 +101,6 @@ class TestsList : AppCompatActivity() {
             in 16..21 -> resources.getString(R.string.hello_user_evening)
             else -> resources.getString(R.string.hello_user_night)
         }
-
         hello_user.text = "$hello, "
     }
 
@@ -108,8 +115,8 @@ class TestsList : AppCompatActivity() {
         val a1 =  ScoreTest.Question.Answer("Нормально", 1)
         val a2 =  ScoreTest.Question.Answer("Очень плохо", 0)
         q.answers = arrayListOf(a1, a2)
-        var r1 = ScoreTest.Result("Всё хорошо, проходите тесты дальше, если их нет - создайте", 1, 2)
-        var r2 = ScoreTest.Result("Всё очень плохо, Вам нужно проходить наши тесты! Если их нет - создайте", 0, 1)
+        val r1 = ScoreTest.Result("Всё хорошо, проходите тесты дальше, если их нет - создайте", 1, 2)
+        val r2 = ScoreTest.Result("Всё очень плохо, Вам нужно проходить наши тесты! Если их нет - создайте", 0, 1)
         t.results = arrayListOf(r1, r2)
         t.questions = arrayListOf(q)
         array.add(t)

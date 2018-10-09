@@ -76,7 +76,7 @@
     <!--</LinearLayout>-->
 
     <LinearLayout
-        android:id="@+id/linearLayout7"
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -147,7 +147,7 @@
         android:background="@color/colorBackground"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
+        app:layout_constraintTop_toBottomOf="@+id/header">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/questions_list"
@@ -160,6 +160,7 @@
     </LinearLayout>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/nav_bar"
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:background="@drawable/nav_bar_bg"
@@ -167,20 +168,23 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
+            android:id="@+id/get_results"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/button_bg_gradient"
             android:gravity="center"
             android:onClick="getResult"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:text="@string/create_test_get_result"
             android:textAlignment="center"
             android:textColor="@color/colorTextOnButtons"
             android:textIsSelectable="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
