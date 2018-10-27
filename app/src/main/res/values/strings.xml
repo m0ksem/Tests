@@ -6,7 +6,6 @@
     <string name="author">Автор</string>
 
 
-
     <string name="back_button">&lt;</string>
     <string name="front_button">></string>
     <string name="add_button">+</string>
@@ -52,15 +51,20 @@
     <string name="create_test_add">Добавить</string>
     <string name="create_test_get_result">Получить результат</string>
 
+    <string name="create_test_at_first_select_type">Сначала выберите тип теста</string>
+    <string name="create_test_you_no_need_results">Сначала выберите тип теста</string>
+
     <string name="create_test_choose_type">Выбери тип теста</string>
+    <string name="create_test_selected_type">Выберанный тип теста </string>
     <string name="create_test_choose_tags">Выберите теги</string>
     <string name="create_test_set_question">Составьте список вопросов</string>
     <string name="create_test_test_results_for_questions">Выберите результаты для теста</string>
 
-
+    <string name="create_test_question_text">Текст вопроса</string>
     <string name="create_test_enter_name">Введите название теста</string>
     <string name="create_test_enter_tag_name">Введите название тега</string>
     <string name="create_test_enter_question_text">Введите текст вопроса</string>
+    <string name="create_test_enter_answer_text">Введите текст ответа</string>
     <string name="create_test_enter_result_text">Введите текст результата</string>
     <string name="create_test_enter_answer">Ответ</string>
     <string name="create_test_enter_value">Значение</string>
@@ -68,9 +72,13 @@
     <string name="create_test_min">Мин.</string>
 
     <string name="create_test_type_score">Ответы с баллами</string>
-    <string name="create_test_type_score_info">За каждый ответ начисляется балл, в зависимости от выбраного результата\nПосле прохождения теста показывается результат в зависимости от суммы набраных баллов</string>
-    <string name="create_test_type_sequential">Последовательный</string>
-    <string name="create_test_type_sequential_info">Один вопрос на экране  Пока не будет ответа на текущий вопрос, следущий будет не доступен</string>
+    <string name="create_test_type_score_info">За каждый ответ начисляется балл, в зависимости от выбраного результата.\nПосле прохождения теста показывается результат в зависимости от суммы набраных баллов.</string>
+    <string name="create_test_type_string">Ассоциации</string>
+    <string name="create_test_type_string_info">К каждому ответу есть своё пояснение.</string>
 
+    <string name="your_result">Ваш результат</string>
+    <string name="find_new_tests">Просмотреть ещё тесты</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

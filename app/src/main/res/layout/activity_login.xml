@@ -44,12 +44,15 @@
                 android:id="@+id/login_hello"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="6dp"
                 android:textColor="@android:color/white"
                 android:textSize="48sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
                 android:layout_marginBottom="20dp"
                 android:text="@string/hello_under"
                 android:textColor="@android:color/white"

@@ -1,5 +1,6 @@
 package com.example.m0ksem.imprtest.TestView
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -12,6 +13,8 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.*
 import com.example.m0ksem.imprtest.*
+import com.example.m0ksem.imprtest.Results.ManyStringResult
+import com.example.m0ksem.imprtest.Results.OneStringResult
 
 
 @Suppress("UNCHECKED_CAST", "UNUSED_PARAMETER")
@@ -24,7 +27,7 @@ class TestViewActivity : AppCompatActivity() {
     private lateinit var list: RecyclerView
 
     lateinit var button: ConstraintLayout
-    var button_showed: Boolean = false
+    private var buttonShowed: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,15 +36,13 @@ class TestViewActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.test_name).text = test.name
         findViewById<TextView>(R.id.view_test_questions_count).text = test.questions.size.toString()
         findViewById<TextView>(R.id.view_test_author).text = test.author
-        if (test is ScoreTest) {
-            adapter = AdapterAnswersWithScore(test.questions) as RecyclerView.Adapter<RecyclerView.ViewHolder>
-        }
-
+        adapter = AdapterAnswers(test.questions) as RecyclerView.Adapter<RecyclerView.ViewHolder>
         list = this.findViewById(R.id.questions_list)
         list.layoutManager = LinearLayoutManager(this)
         list.adapter = adapter
-        button = this.findViewById<ConstraintLayout>(R.id.nav_bar)!!
+        button = this.findViewById(R.id.nav_bar)!!
         button.alpha = 0.0F
+        button.isClickable = false
     }
 
     fun back(view: View){
@@ -49,27 +50,42 @@ class TestViewActivity : AppCompatActivity() {
     }
 
     fun getResult(view: View) {
-        var result = ""
-        if (test is ScoreTest) {
-            val a = getUserAnswersScores()
-            if (a == null) {
-                Toast.makeText(this, "Вы не ответили на все вопросы", Toast.LENGTH_LONG).show()
-                return
-            }
+        if (test.type == "answers_with_score") {
+            val result: String
+            val a = getUserAnswersScores() ?: return
             var sum = 0
             for (i in a) {
                 sum += i
             }
             result = (test as ScoreTest).getResult(sum)
+            val intent = Intent(this, OneStringResult::class.java)
+            intent.putExtra("result", result)
+            startActivityForResult(intent, 1)
         }
-        Toast.makeText(this, result, Toast.LENGTH_LONG).show()
+        if (test.type == "answers_with_string") {
+            val answers: ArrayList<String> = ArrayList()
+            for (i: Int in 0 until adapter.itemCount) {
+                val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
+                val a: AdapterAnswers.ViewAnswerAdapter = q.answers.adapter as AdapterAnswers.ViewAnswerAdapter
+                if (a.selectedAnswer == -1) {
+                }
+                val ans = test.questions[i].answers[a.selectedAnswer] as StringTest.Question.Answer
+                answers.add(ans.explanation)
+            }
+            val array = arrayOfNulls<String>(answers.size)
+            answers.toArray(array)
+            val intent = Intent(this, ManyStringResult::class.java)
+            intent.putExtra("results", array)
+            startActivityForResult(intent, 1)
+        }
+
     }
 
     private fun getUserAnswersScores() : ArrayList<Int>? {
         val scores: ArrayList<Int> = ArrayList()
         for (i: Int in 0 until adapter.itemCount) {
-            val q: AdapterAnswersWithScore.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswersWithScore.ViewHolder
-            val a: AdapterAnswersWithScore.ViewAnswerAdapter = q.answers.adapter as AdapterAnswersWithScore.ViewAnswerAdapter
+            val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
+            val a: AdapterAnswers.ViewAnswerAdapter = q.answers.adapter as AdapterAnswers.ViewAnswerAdapter
             if (a.selectedAnswer == -1) {
                 return null
             }
@@ -80,22 +96,22 @@ class TestViewActivity : AppCompatActivity() {
     }
 
     private fun checkTestPassed() {
-        if (!button_showed) {
+        if (!buttonShowed) {
             for (i: Int in 0 until adapter.itemCount) {
-                val q: AdapterAnswersWithScore.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswersWithScore.ViewHolder
-                val a: AdapterAnswersWithScore.ViewAnswerAdapter = q.answers.adapter as AdapterAnswersWithScore.ViewAnswerAdapter
-                Log.d("AA", a.selectedAnswer.toString())
+                val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
+                val a: AdapterAnswers.ViewAnswerAdapter = q.answers.adapter as AdapterAnswers.ViewAnswerAdapter
                 if (a.selectedAnswer == -1) {
                     return
                 }
             }
             button.alpha = 1.0f
+            button.isClickable = true
             button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.open_activity_button_up))
-            button_showed = true
+            buttonShowed = true
         }
     }
 
-    inner class AdapterAnswersWithScore(private val questions: ArrayList<Test.Question>) : RecyclerView.Adapter<AdapterAnswersWithScore.ViewHolder>() {
+    inner class AdapterAnswers(private val questions: ArrayList<Test.Question>) : RecyclerView.Adapter<AdapterAnswers.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
             return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_test_question, parent, false))
@@ -104,7 +120,7 @@ class TestViewActivity : AppCompatActivity() {
         override fun onBindViewHolder(view: ViewHolder, position: Int) {
             view.questionText.text = questions[position].text
             view.answers.layoutManager = LinearLayoutManager(view.ctx)
-            view.answers.adapter = ViewAnswerAdapter(questions[position].answers as ArrayList<ScoreTest.Question.Answer>)
+            view.answers.adapter = ViewAnswerAdapter(questions[position].answers)
         }
 
         override fun getItemCount(): Int {
@@ -117,7 +133,7 @@ class TestViewActivity : AppCompatActivity() {
             val ctx = view.context!!
         }
 
-        inner class ViewAnswerAdapter(private val answers: ArrayList<ScoreTest.Question.Answer>) : RecyclerView.Adapter<ViewAnswerAdapter.ViewHolder>() {
+        inner class ViewAnswerAdapter(private val answers: ArrayList<Test.Question.Answer>) : RecyclerView.Adapter<ViewAnswerAdapter.ViewHolder>() {
             var selectedAnswer: Int = -1
 
             override fun onCreateViewHolder(parent: ViewGroup, position: Int): ViewHolder {
@@ -152,61 +168,3 @@ class TestViewActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
-//class ViewQuestionAdapter(private val questions: ArrayList<ArrayList<String>>) : RecyclerView.Adapter<ViewQuestionAdapter.ViewHolder>() {
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
-//        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_test_question, parent, false))
-//    }
-//
-//    override fun onBindViewHolder(view: ViewHolder, position: Int) {
-//        view.questionText.text = questions[position][0]
-//        view.answers.layoutManager = LinearLayoutManager(view.ctx)
-//        view.answers.adapter = ViewAnswerAdapter(questions[position])
-//    }
-//
-//    override fun getItemCount(): Int {
-//        return questions.size
-//    }
-//
-//    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-//        val questionText = view.findViewById<TextView>(R.id.view_test_question)!!
-//        val answers = view.findViewById<RecyclerView>(R.id.view_test_answer)!!
-//        val ctx = view.context!!
-//    }
-//
-//    class ViewAnswerAdapter(private val answers: ArrayList<String>) : RecyclerView.Adapter<ViewAnswerAdapter.ViewHolder>() {
-//        var selectedAnswer: Int = -1
-//
-//        override fun onCreateViewHolder(parent: ViewGroup, position: Int): ViewHolder {
-//            return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_test_answer, parent, false))
-//        }
-//
-//        override fun onBindViewHolder(view: ViewHolder, position: Int) {
-//            view.answer.text = answers[position + 1]
-//            view.answer.isChecked = false
-//            if (selectedAnswer == position) {
-//                view.answer.isChecked = true
-//            }
-//        }
-//
-//        override fun getItemCount(): Int {
-//            return answers.size - 1
-//        }
-//
-//        inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-//            val answer = view.findViewById<CheckBox>(R.id.view_test_answer)!!
-//
-//            init {
-//                val clickListener = View.OnClickListener {
-//                    selectedAnswer = adapterPosition
-//                    notifyDataSetChanged()
-//                }
-//                answer.setOnClickListener(clickListener)
-//                view.setOnClickListener(clickListener)
-//            }
-//        }
-//    }
-//}

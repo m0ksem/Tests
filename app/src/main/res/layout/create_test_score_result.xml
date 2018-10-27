@@ -23,7 +23,7 @@
             android:id="@+id/constraintLayout9"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:onClick="logout"
+            android:onClick="deleteResult"
             android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +37,6 @@
                 android:layout_weight="1"
                 android:background="@drawable/ic_delete_grey_24dp"
                 android:clickable="false"
-                android:onClick="deleteQuestion"
                 android:padding="8dp"
                 android:textAlignment="center"
                 android:textColor="@android:color/darker_gray"
@@ -75,34 +74,35 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
         <EditText
-            android:id="@+id/min"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/input"
-            android:hint="@string/create_test_min"
-            android:inputType="text"
-            android:paddingBottom="5dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:paddingTop="5dp"
-            app:layout_constraintStart_toEndOf="@+id/max" />
-
-        <EditText
             android:id="@+id/max"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:background="@drawable/input"
             android:hint="@string/create_test_max"
             android:inputType="text"
-            android:paddingBottom="5dp"
             android:paddingLeft="15dp"
-            android:paddingRight="15dp"
             android:paddingTop="5dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
+
+        <EditText
+            android:id="@+id/min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/input"
+            android:hint="@string/create_test_min"
+            android:inputType="text"
+            android:paddingLeft="15dp"
+            android:paddingTop="5dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="5dp"
+            app:layout_constraintEnd_toStartOf="@+id/max"
+            tools:layout_editor_absoluteY="0dp" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

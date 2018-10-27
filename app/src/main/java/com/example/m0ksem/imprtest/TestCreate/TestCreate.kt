@@ -5,19 +5,12 @@ package com.example.m0ksem.imprtest.TestCreate
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.util.Log
 import android.view.View
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.Animation
-import android.view.animation.Transformation
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import com.example.m0ksem.imprtest.R
-import com.example.m0ksem.imprtest.ScoreTest
-import com.example.m0ksem.imprtest.Test
+import com.example.m0ksem.imprtest.*
 import com.example.m0ksem.imprtest.TestCreate.ChooseTags.ChooseTags
 import com.example.m0ksem.imprtest.TestCreate.ChooseType.ChooseType
 import com.example.m0ksem.imprtest.TestCreate.SetQuestions.SetQuestions
@@ -61,11 +54,17 @@ class TestCreate : AppCompatActivity() {
 
     fun setQuestions(view: View) {
         // TODO() Сделать так чтобы активити нельзя было вызвать если тип не выбран.
-        val intent = Intent(this, SetQuestions::class.java)
-        intent.putExtra("questions", questions as Serializable)
-        intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
-        startActivityForResult(intent, 2)
-        overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
+        if (type != null) {
+            val intent = Intent(this, SetQuestions::class.java)
+            intent.putExtra("questions", questions as Serializable)
+            intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
+            intent.putExtra("type", type)
+            startActivityForResult(intent, 2)
+            overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
+        }
+        else {
+            Toast.makeText(this, R.string.create_test_at_first_select_type, Toast.LENGTH_LONG).show()
+        }
     }
 
     fun chooseTags(view: View) {
@@ -83,6 +82,11 @@ class TestCreate : AppCompatActivity() {
             intent.putExtra("results", results)
             intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
             startActivityForResult(intent, 4)
+        } else if (type == "answers_with_string") {
+            Toast.makeText(this, R.string.create_test_you_no_need_results, Toast.LENGTH_LONG).show()
+        }
+        else {
+            Toast.makeText(this, R.string.create_test_at_first_select_type, Toast.LENGTH_LONG).show()
         }
         overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
     }
@@ -95,6 +99,7 @@ class TestCreate : AppCompatActivity() {
         }
         if (requestCode == 1){
             type = data.getStringExtra("type")
+            findViewById<TextView>(R.id.selected_type).text = R.string.create_test_selected_type.toString() + type
             tipsView.text = tips[2]
         }
         if (requestCode == 2) {
@@ -121,13 +126,28 @@ class TestCreate : AppCompatActivity() {
             val userName: String = intent.getStringExtra("username")
             val test = when (type) {
                 "answers_with_score" -> ScoreTest(testName, userName)
+                "answers_with_string" -> StringTest(testName, userName)
                 else -> Test(testName, userName)
             }
-            if (test is ScoreTest) {
-                test.questions = questions!!
-                test.tags = tags!!
-                test.type = type!!
-                test.results = results!!
+            when (test) {
+                is ScoreTest -> {
+                    test.questions = questions!!
+                    test.tags = tags!!
+                    test.type = type!!
+                    test.results = results!!
+                }
+                is StringTest -> {
+                    test.questions = questions!!
+                    test.tags = tags!!
+                    test.type = type!!
+                    test.results = ArrayList()
+                }
+                is NeuroTest -> {
+                    test.questions = questions!!
+                    test.tags = tags!!
+                    test.type = type!!
+                    test.results = results!!
+                }
             }
             intent.putExtra("test", test as Serializable)
             setResult(RESULT_OK, intent)

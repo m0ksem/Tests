@@ -2,11 +2,12 @@
 
 package com.example.m0ksem.imprtest.TestList
 
-import android.animation.LayoutTransition
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -14,44 +15,50 @@ import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
-import android.widget.TextView
 import android.widget.Toast
-import com.example.m0ksem.imprtest.Login
-import com.example.m0ksem.imprtest.R
-import com.example.m0ksem.imprtest.ScoreTest
-import com.example.m0ksem.imprtest.Test
 import com.example.m0ksem.imprtest.TestCreate.TestCreate
 import com.example.m0ksem.imprtest.TestView.TestViewActivity
 import kotlinx.android.synthetic.main.activity_tests_list.*
 import java.util.*
 import kotlin.collections.ArrayList
+import android.content.ContentValues
+import android.os.Parcel
+import android.os.Parcelable
+import android.util.Log
+import com.example.m0ksem.imprtest.*
 
 
 @Suppress("DEPRECATION")
-class TestsList : AppCompatActivity() {
+class TestsList() : AppCompatActivity(), Parcelable {
     private var username: String? = null
 
     private lateinit var accountPreferences: SharedPreferences
 
     private lateinit var adapter: TestAdapter
 
+    private lateinit var dbHelper: DBHelper
+
+    constructor(parcel: Parcel) : this() {
+        username = parcel.readString()
+    }
+
     override fun onResume() {
         super.onResume()
         helloUser()
     }
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tests_list)
         accountPreferences = getSharedPreferences("account", Context.MODE_PRIVATE)
         checkLogin()
         helloUser()
-        val list = this.findViewById<RecyclerView>(R.id.tests_list)
+        val list:RecyclerView = this.findViewById(R.id.tests_list)
         list.layoutManager = LinearLayoutManager(this)
-        adapter = TestAdapter(loadData())
+        dbHelper = DBHelper(this, "tests")
+        adapter = TestAdapter(dbHelper.readData())
         list.adapter = adapter
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -63,6 +70,7 @@ class TestsList : AppCompatActivity() {
 
         val button = this.findViewById<ConstraintLayout>(R.id.nav_bar)!!
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.open_activity_button_up))
+
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -77,7 +85,6 @@ class TestsList : AppCompatActivity() {
     fun createTest(view: View) {
         val intent = Intent(this, TestCreate::class.java)
         intent.putExtra("username", username)
-        // startActivity(intent)
         startActivityForResult(intent, 1)
     }
 
@@ -104,25 +111,6 @@ class TestsList : AppCompatActivity() {
         hello_user.text = "$hello, "
     }
 
-    private fun loadData(): ArrayList<Test> {
-        // TODO Сделать подгрузку этого всего из бд с сервера и компановку полученных данных в виде массивов
-        val array: ArrayList<Test> = ArrayList()
-        val t: Test = ScoreTest("Психологический тест", "ImproveTests")
-        t.type = "answers_with_score"
-        t.tags = arrayListOf("tag", "tag2")
-        val q = ScoreTest.Question()
-        q.text = "Как вы себя чувствуете?"
-        val a1 =  ScoreTest.Question.Answer("Нормально", 1)
-        val a2 =  ScoreTest.Question.Answer("Очень плохо", 0)
-        q.answers = arrayListOf(a1, a2)
-        val r1 = ScoreTest.Result("Всё хорошо, проходите тесты дальше, если их нет - создайте", 1, 2)
-        val r2 = ScoreTest.Result("Всё очень плохо, Вам нужно проходить наши тесты! Если их нет - создайте", 0, 1)
-        t.results = arrayListOf(r1, r2)
-        t.questions = arrayListOf(q)
-        array.add(t)
-        return array
-    }
-
     fun openTest(view: View) {
         val test: Test = view.tag as Test
         val intent = Intent(this, TestViewActivity::class.java)
@@ -138,8 +126,208 @@ class TestsList : AppCompatActivity() {
         }
         if (requestCode == 1) {
             val test: Test = data.getSerializableExtra("test") as Test
+            dbHelper.insert(test)
             adapter.add(test)
             Toast.makeText(this, "Хорошоая работа, ты сделал свой первый тест!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    class DBHelper(val context: Context?, name: String?) : SQLiteOpenHelper(context, name, null, 1) {
+
+        override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        }
+
+        override fun onCreate(db: SQLiteDatabase?) {
+            db!!.execSQL("create table Types  ("
+                    + "id integer primary key autoincrement,"
+                    + "name text"
+                    + ");")
+            var cv = ContentValues()
+            cv.put("name", "answers_with_score")
+            db.insert("Types",null, cv)
+            cv = ContentValues()
+            cv.put("name", "answers_with_strign")
+            db.insert("Types",null, cv)
+            db.execSQL("create table Tests ("
+                    + "id integer primary key autoincrement,"
+                    + "name text,"
+                    + "author text,"
+                    + "type integer, FOREIGN KEY (type) REFERENCES Types(id)"
+                    + ");")
+            db.execSQL("create table Questions ("
+                    + "id integer primary key autoincrement,"
+                    + "text text,"
+                    + "test integer, FOREIGN KEY (test) REFERENCES Tests(id)"
+                    + ");")
+            db.execSQL("create table ScoreAnswers ("
+                    + "id integer primary key autoincrement,"
+                    + "text text,"
+                    + "score integer,"
+                    + "question integer, FOREIGN KEY (question) REFERENCES Questions(id)"
+                    + ");")
+            db.execSQL("create table StringAnswers ("
+                    + "id integer primary key autoincrement,"
+                    + "text text,"
+                    + "explanation text,"
+                    + "question integer, FOREIGN KEY (question) REFERENCES Questions(id)"
+                    + ");")
+            db.execSQL("create table Results ("
+                    + "id integer primary key autoincrement,"
+                    + "text text,"
+                    + "min integer,"
+                    + "max integer,"
+                    + "test integer, FOREIGN KEY (test) REFERENCES test(id)"
+                    + ");")
+        }
+
+        @SuppressLint("Recycle")
+        fun insert(test: Test) {
+            var db = this.writableDatabase
+            var cv = ContentValues()
+            cv.put("name",test.name)
+            cv.put("author", test.author)
+            if (test.type == "answers_with_score") {
+                cv.put("type", "answers_with_score")
+            }
+            else if (test.type == "answers_with_string") {
+                cv.put("type", "answers_with_string")
+            }
+            db.insert("Tests",null, cv)
+            val id = db!!.rawQuery("SELECT id from Tests order by id DESC limit 1", null)
+            for (question in test.questions) {
+                cv = ContentValues()
+                cv.put("text", question.text)
+                db = this.readableDatabase
+
+                id.moveToFirst()
+
+                Toast.makeText(context,"test id ${id.getInt(0).toString()}",Toast.LENGTH_SHORT).show()
+                cv.put("test", id.getInt(0).toString())
+                db = this.writableDatabase
+                db.insert("Questions",null, cv)
+
+                val questionId = db.rawQuery("SELECT id from Questions order by id DESC limit 1", null)
+                questionId.moveToFirst()
+                if (test.type == "answers_with_score") {
+                    for (answer: ScoreTest.Question.Answer in (question.answers as ArrayList<ScoreTest.Question.Answer>)) {
+                        cv = ContentValues()
+                        cv.put("text", answer.text)
+                        cv.put("score", answer.score)
+                        cv.put("question", questionId.getInt(0))
+                        db = this.writableDatabase
+                        db.insert("ScoreAnswers",null, cv)
+                    }
+                }
+                else if (test.type == "answers_with_string") {
+                    for (answer: StringTest.Question.Answer in question.answers as ArrayList<StringTest.Question.Answer>) {
+                        cv = ContentValues()
+                        cv.put("text", answer.text)
+                        cv.put("explanation", answer.explanation)
+                        cv.put("question", questionId.getInt(0))
+                        db = this.writableDatabase
+                        db.insert("StringAnswers",null, cv)
+                    }
+                }
+
+            }
+            test.results.forEach {
+                cv = ContentValues()
+                it as ScoreTest.Result
+                cv.put("text", it.text)
+                cv.put("min", (it).min)
+                cv.put("max", (it).max)
+                cv.put("test", id.getInt(0))
+                db = this.writableDatabase
+                db.insert("Results",null, cv)
+            }
+        }
+
+        @SuppressLint("Recycle")
+        fun readData(): ArrayList<Test>{
+            val list : ArrayList<Test> = ArrayList()
+
+            val db = this.readableDatabase
+            val query = "Select * from " + "Tests"
+            val result = db.rawQuery(query,null)
+
+            var answersType = "ScoreAnswers"
+
+            if(result.moveToFirst()){
+                do {
+                    val test = ScoreTest(result.getString(result.getColumnIndex("name")), result.getString(result.getColumnIndex("author")))
+                    test.type = result.getString(result.getColumnIndex("type"))
+                    if (test.type == "answers_with_string") {
+                        answersType = "StringAnswers"
+                    }
+                    val questions = ArrayList<Test.Question>()
+                    val questionsSQL = db.rawQuery("Select * from Questions where (test = ${ result.getString(result.getColumnIndex("id")) })", null)
+                    questionsSQL.moveToFirst()
+                    do {
+                        val question: Test.Question = Test.Question()
+                        question.text = questionsSQL.getString(questionsSQL.getColumnIndex("text"))
+                        question.answers = ArrayList()
+                        questions.add(question)
+                        val answersSQL = db.rawQuery("Select * from $answersType where (question = ${ questionsSQL.getString(questionsSQL.getColumnIndex("id")) })", null)
+                        answersSQL.moveToFirst()
+                        if (test.type == "answers_with_score") {
+                            do {
+                                val answer = ScoreTest.Question.Answer(answersSQL.getString(answersSQL.getColumnIndex("text")), answersSQL.getInt(answersSQL.getColumnIndex("score")))
+                                question.answers.add(answer)
+                            } while (answersSQL.moveToNext())
+                        } else if (test.type == "answers_with_string") {
+                            do {
+                                val answer = StringTest.Question.Answer(answersSQL.getString(answersSQL.getColumnIndex("text")), answersSQL.getString(answersSQL.getColumnIndex("explanation")))
+                                question.answers.add(answer)
+                            } while (answersSQL.moveToNext())
+                        }
+                    }
+                    while (questionsSQL.moveToNext())
+                    test.questions = questions
+                    if (test.type == "answers_with_score") {
+                        val resultsSQL = db.rawQuery("Select * from Results where (test = ${result.getString(result.getColumnIndex("id"))})", null)
+                        test.results = ArrayList()
+                        if (resultsSQL.moveToFirst()) {
+                            do {
+                                test.results.add(ScoreTest.Result(resultsSQL.getString(resultsSQL.getColumnIndex("text")), resultsSQL.getInt(resultsSQL.getColumnIndex("min")), resultsSQL.getInt(resultsSQL.getColumnIndex("max"))))
+                            } while (resultsSQL.moveToNext())
+                        }
+                    }
+                    list.add(test)
+                }
+                while (result.moveToNext())
+            }
+
+            result.close()
+            db.close()
+            return list
+        }
+
+        fun cleadDB() {
+            val db = this.writableDatabase
+            db?.execSQL("drop table Types;")
+            db?.execSQL("drop table Tests;")
+            db?.execSQL("drop table Questions")
+            db?.execSQL("drop table ScoreAnswers;")
+            db?.execSQL("drop table Results;")
+            onCreate(this.writableDatabase)
+        }
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(username)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<TestsList> {
+        override fun createFromParcel(parcel: Parcel): TestsList {
+            return TestsList(parcel)
+        }
+
+        override fun newArray(size: Int): Array<TestsList?> {
+            return arrayOfNulls(size)
         }
     }
 }

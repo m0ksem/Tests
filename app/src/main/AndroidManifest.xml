@@ -12,27 +12,33 @@
         <activity
             android:name=".Login"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".TestList.TestsList"
-            android:windowSoftInputMode="adjustResize"
-            >
+        <activity
+            android:name=".TestList.TestsList"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity android:name=".TestView.TestViewActivity" />
-        <activity android:name=".TestCreate.TestCreate"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".TestCreate.ChooseType.ChooseType"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".TestCreate.SetQuestions.SetQuestions"
-            android:windowSoftInputMode="adjustResize"></activity>
-        <activity android:name=".TestCreate.ChooseTags.ChooseTags"
-            android:windowSoftInputMode="adjustResize"></activity>
-        <activity android:name=".TestCreate.SetResults.SetResults"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".TestCreate.TestCreate"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".TestCreate.ChooseType.ChooseType"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".TestCreate.SetQuestions.SetQuestions"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".TestCreate.ChooseTags.ChooseTags"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".TestCreate.SetResults.SetResults"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Results.OneStringResult"></activity>
+        <activity android:name=".Results.ManyStringResult" />
     </application>
 
 </manifest>

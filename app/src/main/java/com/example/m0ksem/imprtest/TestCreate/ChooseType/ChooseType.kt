@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package com.example.m0ksem.imprtest.TestCreate.ChooseType
 
 import android.support.v7.app.AppCompatActivity
@@ -50,8 +52,12 @@ class ChooseType : AppCompatActivity() {
 
     fun onClick(view: View) {
         when (view.id) {
-            R.id.create_test_choose_type_list -> {
-                intent.putExtra("type", "answers_with_score");
+            R.id.create_test_choose_type_score -> {
+                intent.putExtra("type", "answers_with_score")
+                setResult(RESULT_OK, intent);
+            }
+            R.id.create_test_choose_type_string -> {
+                intent.putExtra("type", "answers_with_string")
                 setResult(RESULT_OK, intent);
             }
         }

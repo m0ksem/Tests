@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,14 +23,14 @@ import com.example.m0ksem.imprtest.Test
 class SetResults : AppCompatActivity() {
 
     private lateinit var adapter: ResultAdapter
-    lateinit var tags_list: RecyclerView
+    lateinit var result_list: RecyclerView
     var type: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_set_results)
-        tags_list = this.findViewById<RecyclerView>(R.id.create_test_results_list)
-        tags_list.layoutManager = LinearLayoutManager(this)
+        result_list = this.findViewById<RecyclerView>(R.id.create_test_results_list)
+        result_list.layoutManager = LinearLayoutManager(this)
         if (intent.getStringExtra("type") == "answer_with_score") {
             type = 0
             val results: ArrayList<ScoreTest.Result>
@@ -43,7 +42,7 @@ class SetResults : AppCompatActivity() {
             }
             adapter = ResultWithScoreAdapter(results as ArrayList<Test.Result>)
         }
-        tags_list.adapter = adapter
+        result_list.adapter = adapter
     }
 
     fun addResult(view: View) {
@@ -94,8 +93,8 @@ class SetResults : AppCompatActivity() {
     }
 
     fun deleteResult(view: View) {
-        val item: ConstraintLayout = view.parent as ConstraintLayout
-        val pos: Int = tags_list.getChildAdapterPosition(item)
+        val item: ConstraintLayout = view.parent.parent as ConstraintLayout
+        val pos: Int = result_list.getChildAdapterPosition(item)
         adapter.delete(pos)
     }
 
