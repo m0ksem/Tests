@@ -10,24 +10,26 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import com.example.m0ksem.imprtest.R
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 
 class ChooseType : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_type)
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        if (hasFocus) {
-            val header: ConstraintLayout = this.findViewById(R.id.header)!!
-            val startHeight: Int = header.height + 20
-            val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
-            animation.interpolator = AccelerateInterpolator()
-            animation.duration = 300
-            header.animation = animation
-            header.startAnimation(animation)
-        }
+        val header: ConstraintLayout = this.findViewById(R.id.header)!!
+        val vto = header.viewTreeObserver
+        vto.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                header.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val startHeight = header.measuredHeight + 20
+                val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
+                animation.interpolator = AccelerateInterpolator()
+                animation.duration = 300
+                header.animation = animation
+                header.startAnimation(animation)
+            }
+        })
     }
 
     inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
@@ -58,6 +60,10 @@ class ChooseType : AppCompatActivity() {
             }
             R.id.create_test_choose_type_string -> {
                 intent.putExtra("type", "answers_with_string")
+                setResult(RESULT_OK, intent);
+            }
+            R.id.create_test_choose_type_neuro -> {
+                intent.putExtra("type", "answers_with_connection")
                 setResult(RESULT_OK, intent);
             }
         }

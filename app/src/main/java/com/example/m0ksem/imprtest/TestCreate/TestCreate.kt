@@ -53,11 +53,32 @@ class TestCreate : AppCompatActivity() {
     }
 
     fun setQuestions(view: View) {
-        // TODO() Сделать так чтобы активити нельзя было вызвать если тип не выбран.
         if (type != null) {
             val intent = Intent(this, SetQuestions::class.java)
-            intent.putExtra("questions", questions as Serializable)
             intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
+            if (type == "answers_with_connection" && results != null && questions != null) {
+                val defaultConnections: ArrayList<NeuroTest.Connection> = ArrayList()
+                for (i in 0 until results!!.size) {
+                    defaultConnections.add(NeuroTest.Connection(results!![i], 0f))
+                }
+                intent.putExtra("default_connections", defaultConnections as Serializable)
+                for (question in questions!!) {
+                    for (answer in question.answers) {
+                        for (connection in (answer as NeuroTest.Question.Answer).connections) {
+                            if (results!!.indexOf(connection.result) != -1) {
+                                answer.connections.remove(connection)
+                            }
+                        }
+                        if (results!!.size > answer.connections.size) {
+                            val newElementsCount = results!!.size - answer.connections.size
+                            for (i in 0 until newElementsCount) {
+                                answer.connections.add(NeuroTest.Connection(results!![results!!.size - i], 0f))
+                            }
+                        }
+                    }
+                }
+            }
+            intent.putExtra("questions", questions as Serializable)
             intent.putExtra("type", type)
             startActivityForResult(intent, 2)
             overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
@@ -76,17 +97,24 @@ class TestCreate : AppCompatActivity() {
     }
 
     fun setResults(view: View) {
-        if (type == "answers_with_score") {
-            val intent = Intent(this, SetResults::class.java)
-            intent.putExtra("type", "answer_with_score")
-            intent.putExtra("results", results)
-            intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
-            startActivityForResult(intent, 4)
-        } else if (type == "answers_with_string") {
-            Toast.makeText(this, R.string.create_test_you_no_need_results, Toast.LENGTH_LONG).show()
-        }
-        else {
-            Toast.makeText(this, R.string.create_test_at_first_select_type, Toast.LENGTH_LONG).show()
+        when (type) {
+            "answers_with_score" -> {
+                val intent = Intent(this, SetResults::class.java)
+                intent.putExtra("type", type)
+                intent.putExtra("results", results)
+                intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
+                startActivityForResult(intent, 4)
+            }
+            "answers_with_connection" -> {
+                val intent = Intent(this, SetResults::class.java)
+                intent.putExtra("type", type)
+                intent.putExtra("results", results)
+                intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
+                startActivityForResult(intent, 4)
+            }
+            "answers_with_string" -> // TODO() Поменять текст, потому что тут "Вам не нужно создавать результаты отдельно
+                Toast.makeText(this, R.string.create_test_you_no_need_results, Toast.LENGTH_LONG).show()
+            else -> Toast.makeText(this, R.string.create_test_at_first_select_type, Toast.LENGTH_LONG).show()
         }
         overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
     }
@@ -99,7 +127,14 @@ class TestCreate : AppCompatActivity() {
         }
         if (requestCode == 1){
             type = data.getStringExtra("type")
-            findViewById<TextView>(R.id.selected_type).text = R.string.create_test_selected_type.toString() + type
+            if (type == "answers_with_score") {
+                findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type)+ " " + resources.getString(R.string.create_test_type_score)
+            } else if (type == "answers_with_string") {
+                findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type) + " " + resources.getString(R.string.create_test_type_string)
+            }
+            else if (type == "answers_with_connection") {
+                findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type) + " " + "CONNETIONS"//resources.getString(R.string.create_test_type_string)
+            }
             tipsView.text = tips[2]
         }
         if (requestCode == 2) {
@@ -127,7 +162,7 @@ class TestCreate : AppCompatActivity() {
             val test = when (type) {
                 "answers_with_score" -> ScoreTest(testName, userName)
                 "answers_with_string" -> StringTest(testName, userName)
-                else -> Test(testName, userName)
+                else -> null
             }
             when (test) {
                 is ScoreTest -> {

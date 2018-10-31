@@ -271,7 +271,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
                         answersSQL.moveToFirst()
                         if (test.type == "answers_with_score") {
                             do {
-                                val answer = ScoreTest.Question.Answer(answersSQL.getString(answersSQL.getColumnIndex("text")), answersSQL.getInt(answersSQL.getColumnIndex("score")))
+                                val answer = ScoreTest.Question.Answer(answersSQL.getString(answersSQL.getColumnIndex("text")), answersSQL.getFloat(answersSQL.getColumnIndex("score")))
                                 question.answers.add(answer)
                             } while (answersSQL.moveToNext())
                         } else if (test.type == "answers_with_string") {
@@ -288,7 +288,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
                         test.results = ArrayList()
                         if (resultsSQL.moveToFirst()) {
                             do {
-                                test.results.add(ScoreTest.Result(resultsSQL.getString(resultsSQL.getColumnIndex("text")), resultsSQL.getInt(resultsSQL.getColumnIndex("min")), resultsSQL.getInt(resultsSQL.getColumnIndex("max"))))
+                                test.results.add(ScoreTest.Result(resultsSQL.getString(resultsSQL.getColumnIndex("text")), resultsSQL.getFloat(resultsSQL.getColumnIndex("min")), resultsSQL.getFloat(resultsSQL.getColumnIndex("max"))))
                             } while (resultsSQL.moveToNext())
                         }
                     }

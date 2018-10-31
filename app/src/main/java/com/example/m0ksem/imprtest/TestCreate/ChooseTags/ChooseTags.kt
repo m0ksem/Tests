@@ -13,8 +13,7 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.view.animation.AccelerateInterpolator
 import android.support.v4.os.HandlerCompat.postDelayed
-
-
+import android.view.ViewTreeObserver
 
 
 @Suppress("UNUSED_PARAMETER")
@@ -31,18 +30,19 @@ class ChooseTags : AppCompatActivity() {
         val tags: ArrayList<String> = intent.getStringArrayListExtra("tags")  ?: ArrayList()
         adapter = TagInChooseTagsAdapter(tags)
         tags_list.adapter = adapter
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        if (hasFocus) {
-            val header: ConstraintLayout = this.findViewById(R.id.header)!!
-            val startHeight: Int = header.height + 20
-            val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
-            animation.interpolator = AccelerateInterpolator()
-            animation.duration = 300
-            header.animation = animation
-            header.startAnimation(animation)
-        }
+        val header: ConstraintLayout = this.findViewById(R.id.header)!!
+        val vto = header.viewTreeObserver
+        vto.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                header.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val startHeight = header.measuredHeight + 20
+                val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
+                animation.interpolator = AccelerateInterpolator()
+                animation.duration = 300
+                header.animation = animation
+                header.startAnimation(animation)
+            }
+        })
     }
 
     inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {

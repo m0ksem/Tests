@@ -5,7 +5,7 @@ import android.util.Log
 import java.io.File
 import java.io.Serializable
 
-open class Test(val name: String = "Псих тест", val author: String = "m0ksem") : Serializable {
+abstract class Test(val name: String = "Псих тест", val author: String = "m0ksem") : Serializable {
     var id: Int = 0
     lateinit var type: String
     lateinit var questions: ArrayList<Question>
@@ -15,7 +15,6 @@ open class Test(val name: String = "Псих тест", val author: String = "m0
     open class Question : Serializable {
         lateinit var text: String
         var answers: ArrayList<Answer> = ArrayList()
-
 
         open class Answer(var text: String) : Serializable
     }
@@ -27,12 +26,12 @@ class ScoreTest(name: String, author: String) : Test(name, author) {
     override lateinit var results: ArrayList<Test.Result>
 
     class Question : Test.Question() {
-        class Answer(text: String, var score: Int) : Test.Question.Answer(text)
+        class Answer(text: String, var score: Float) : Test.Question.Answer(text)
     }
 
-    class Result(result: String, var min: Int, var max: Int) : Test.Result(result)
+    class Result(result: String, var min: Float, var max: Float) : Test.Result(result)
 
-    fun getResult(position: Int): String {
+    fun getResult(position: Float): String {
         for (r in results) {
             val result: ScoreTest.Result = r as Result
             if (result.min <= position && result.max > position) return result.text
@@ -51,12 +50,46 @@ class NeuroTest(name: String, author: String) : Test(name, author) {
     override lateinit var results: ArrayList<Test.Result>
 
     class Question : Test.Question() {
-        class Answer(text: String, var connections: ArrayList<Connection>) : Test.Question.Answer(text) {
-            data class Connection(var weight: Int, var result: Test.Result)
+        class Answer(text: String, val connections: ArrayList<Connection> = ArrayList()) : Test.Question.Answer(text)
+    }
+
+    val default_connections: ArrayList<Connection> = ArrayList()
+
+    fun updateDefaultConnections() {
+        for (connection in default_connections) {
+            if (results.indexOf(connection.result) != -1) {
+                default_connections.remove(connection)
+            }
+        }
+        if (results.size > default_connections.size) {
+            val newElementsCount = results.size - default_connections.size
+            for (i in 0..newElementsCount) {
+                default_connections.add(Connection(results[results.size - i], 0f))
+            }
         }
     }
 
-    class Result(result: String, var score: Int, var min: Int, var max: Int) : Test.Result(result)
+    fun updateResult() {
+        for (question in questions) {
+            for (answer in question.answers) {
+                for (connection in (answer as NeuroTest.Question.Answer).connections) {
+                    if (results.indexOf(connection.result) != -1) {
+                        answer.connections.remove(connection)
+                    }
+                }
+                if (results.size > answer.connections.size) {
+                    val newElementsCount = results.size - answer.connections.size
+                    for (i in 0..newElementsCount) {
+                        answer.connections.add(Connection(results[results.size - i], 0f))
+                    }
+                }
+            }
+        }
+    }
+
+    class Connection(val result: Test.Result, var weight: Float) : Serializable
+
+    class Result(result: String, var score: Float, var min: Float, var max: Float) : Test.Result(result)
 
     fun getResults(): String {
         val return_results: ArrayList<Test.Result> = ArrayList()

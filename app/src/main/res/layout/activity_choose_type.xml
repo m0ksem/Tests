@@ -136,6 +136,40 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/create_test_choose_type_neuro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_background"
+            android:onClick="onClick"
+            android:orientation="vertical"
+            android:paddingLeft="25dp"
+            android:paddingTop="18dp"
+            android:paddingRight="25dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/create_test_type_neuro"
+                android:textColor="@color/colorTextHeader"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/create_test_type_neuro_info"
+                android:textColor="@color/colorText" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:text="@string/create_test_choose"
+                android:textAlignment="textEnd" />
+
+        </LinearLayout>
+
         <!--<LinearLayout-->
         <!--android:id="@+id/create_test_choose_type_sequential"-->
         <!--android:layout_width="match_parent"-->

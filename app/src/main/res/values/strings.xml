@@ -68,6 +68,7 @@
     <string name="create_test_enter_result_text">Введите текст результата</string>
     <string name="create_test_enter_answer">Ответ</string>
     <string name="create_test_enter_value">Значение</string>
+    <string name="create_test_enter_weight">Вес</string>
     <string name="create_test_max">Макс.</string>
     <string name="create_test_min">Мин.</string>
 
@@ -75,6 +76,8 @@
     <string name="create_test_type_score_info">За каждый ответ начисляется балл, в зависимости от выбраного результата.\nПосле прохождения теста показывается результат в зависимости от суммы набраных баллов.</string>
     <string name="create_test_type_string">Ассоциации</string>
     <string name="create_test_type_string_info">К каждому ответу есть своё пояснение.</string>
+    <string name="create_test_type_neuro">Зависимый тест</string>
+    <string name="create_test_type_neuro_info">Каждый ответ влияет на все результаты.</string>
 
     <string name="your_result">Ваш результат</string>
     <string name="find_new_tests">Просмотреть ещё тесты</string>

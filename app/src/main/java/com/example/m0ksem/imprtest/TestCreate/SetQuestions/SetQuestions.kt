@@ -10,9 +10,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.Transformation
@@ -36,19 +38,22 @@ class SetQuestions : AppCompatActivity()  {
         list.layoutManager = LinearLayoutManager(this)
         adapter = QuestionsAdapter(questions)
         list.adapter = adapter
+
+        val header: ConstraintLayout = this.findViewById(R.id.header)!!
+        val vto = header.viewTreeObserver
+        vto.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                header.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val startHeight = header.measuredHeight + 20
+                val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
+                animation.interpolator = AccelerateInterpolator()
+                animation.duration = 300
+                header.animation = animation
+                header.startAnimation(animation)
+            }
+        })
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        if (hasFocus) {
-            val header: ConstraintLayout = this.findViewById(R.id.header)!!
-            val startHeight: Int = header.height + 20
-            val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
-            animation.interpolator = AccelerateInterpolator()
-            animation.duration = 300
-            header.animation = animation
-            header.startAnimation(animation)
-        }
-    }
 
     inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
         override fun applyTransformation(interpolatedTime: Float, transformation: Transformation) {
@@ -145,9 +150,11 @@ class SetQuestions : AppCompatActivity()  {
 
         fun addAnswer(position: Int , answer: String) {
             if (type == "answers_with_score") {
-                questions[position].answers.add(ScoreTest.Question.Answer(answer, 0))
+                questions[position].answers.add(ScoreTest.Question.Answer(answer, 0f))
             } else if (type == "answers_with_string") {
                 questions[position].answers.add(StringTest.Question.Answer(answer, ""))
+            } else if (type == "answers_with_connection") {
+                questions[position].answers.add(NeuroTest.Question.Answer(answer, (intent.getSerializableExtra("default_connections") as ArrayList<NeuroTest.Connection>).clone() as ArrayList<NeuroTest.Connection>))
             }
             notifyDataSetChanged()
         }
@@ -224,7 +231,6 @@ class SetQuestions : AppCompatActivity()  {
                         }
                     })
                     answerValue.addTextChangedListener(object : TextWatcher {
-                        @SuppressLint("ShowToast")
                         override fun afterTextChanged(p0: Editable?) {
                             answers[position].explanation = p0.toString()
                         }
@@ -247,7 +253,7 @@ class SetQuestions : AppCompatActivity()  {
             override fun onBindViewHolder(view: ViewHolder, position: Int) {
                 view.answerText.text = answers[position].text
                 view.answerValue.text = answers[position].score.toString()
-
+                view.positionInList = position
             }
 
             override fun getItemCount(): Int {
@@ -257,10 +263,11 @@ class SetQuestions : AppCompatActivity()  {
             inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
                 val answerText = view.findViewById<TextView>(R.id.answer_text)!!
                 val answerValue = view.findViewById<TextView>(R.id.answer_value)!!
+                var positionInList = 0
                 init {
                     answerText.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(p0: Editable?) {
-                            answers[position].text = p0.toString()
+                            answers[positionInList].text = p0.toString()
                         }
 
                         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -270,17 +277,16 @@ class SetQuestions : AppCompatActivity()  {
                         }
                     })
                     answerValue.addTextChangedListener(object : TextWatcher {
-                        @SuppressLint("ShowToast")
                         override fun afterTextChanged(p0: Editable?) {
                             val inputText: String = p0.toString()
-                            val intInput: Int? = inputText.toIntOrNull()
+                            val intInput: Float? = inputText.toFloatOrNull()
                             when {
                                 inputText == "" -> return
                                 intInput == null -> {
                                     Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
                                     return
                                 }
-                                else -> answers[position].score = intInput
+                                else -> answers[positionInList].score = intInput
                             }
                         }
 
@@ -296,11 +302,13 @@ class SetQuestions : AppCompatActivity()  {
 
         inner class AnswersWithConnectionAdapter(val answers: ArrayList<NeuroTest.Question.Answer>) : RecyclerView.Adapter<AnswersWithConnectionAdapter.ViewHolder>() {
             override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
-                return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer_with_value, parent, false))
+                return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer_with_connection, parent, false))
             }
 
             override fun onBindViewHolder(view: ViewHolder, position: Int) {
                 view.answerText.text = answers[position].text
+                view.connectionList.layoutManager = LinearLayoutManager(view.ctx)
+                view.connectionList.adapter = ConnectionAdapter(answers[position].connections)
             }
 
             override fun getItemCount(): Int {
@@ -309,6 +317,8 @@ class SetQuestions : AppCompatActivity()  {
 
             inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
                 val answerText = view.findViewById<TextView>(R.id.answer_text)!!
+                val connectionList = view.findViewById<RecyclerView>(R.id.connection_list)!!
+                val ctx = view.context!!
                 init {
                     answerText.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(p0: Editable?) {
@@ -321,6 +331,52 @@ class SetQuestions : AppCompatActivity()  {
                         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                         }
                     })
+                }
+            }
+
+            inner class ConnectionAdapter(val connections: ArrayList<NeuroTest.Connection>) : RecyclerView.Adapter<ConnectionAdapter.ViewHolder>() {
+                override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
+                    return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer_with_connection_connection, parent, false))
+                }
+
+
+                override fun onBindViewHolder(view: ViewHolder, position: Int) {
+                    view.resultText.text = connections[position].result.text
+                    view.answerWeight.text = connections[position].weight.toString()
+                    view.pos = position
+                }
+
+                override fun getItemCount(): Int {
+                    return connections.size
+                }
+
+                inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+                    val resultText = view.findViewById<TextView>(R.id.result_text)!!
+                    val answerWeight = view.findViewById<TextView>(R.id.weight)!!
+                    var pos = 0
+                    init {
+                        answerWeight.addTextChangedListener(object : TextWatcher {
+                            override fun afterTextChanged(p0: Editable?) {
+                                val inputText: String = p0.toString()
+                                val intInput: Float? = inputText.toFloatOrNull()
+                                when {
+                                    inputText == "" -> return
+                                    intInput == null -> {
+                                        Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
+                                        return
+                                    }
+                                    else -> connections[pos].weight = intInput
+                                }
+                                Log.d("AAA", pos.toString())
+                            }
+
+                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                            }
+
+                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                            }
+                        })
+                    }
                 }
             }
         }

@@ -53,7 +53,7 @@ class TestViewActivity : AppCompatActivity() {
         if (test.type == "answers_with_score") {
             val result: String
             val a = getUserAnswersScores() ?: return
-            var sum = 0
+            var sum = 0f
             for (i in a) {
                 sum += i
             }
@@ -81,8 +81,8 @@ class TestViewActivity : AppCompatActivity() {
 
     }
 
-    private fun getUserAnswersScores() : ArrayList<Int>? {
-        val scores: ArrayList<Int> = ArrayList()
+    private fun getUserAnswersScores() : ArrayList<Float>? {
+        val scores: ArrayList<Float> = ArrayList()
         for (i: Int in 0 until adapter.itemCount) {
             val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
             val a: AdapterAnswers.ViewAnswerAdapter = q.answers.adapter as AdapterAnswers.ViewAnswerAdapter
