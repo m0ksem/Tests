@@ -154,7 +154,12 @@ class SetQuestions : AppCompatActivity()  {
             } else if (type == "answers_with_string") {
                 questions[position].answers.add(StringTest.Question.Answer(answer, ""))
             } else if (type == "answers_with_connection") {
-                questions[position].answers.add(NeuroTest.Question.Answer(answer, (intent.getSerializableExtra("default_connections") as ArrayList<NeuroTest.Connection>).clone() as ArrayList<NeuroTest.Connection>))
+                val default_connections: ArrayList<NeuroTest.Connection> = intent.getSerializableExtra("default_connections") as ArrayList<NeuroTest.Connection>
+                val new_connections: ArrayList<NeuroTest.Connection> = ArrayList()
+                for (el: NeuroTest.Connection in default_connections) {
+                    new_connections.add(el.copy())
+                }
+                questions[position].answers.add(NeuroTest.Question.Answer(answer, new_connections))
             }
             notifyDataSetChanged()
         }
@@ -209,39 +214,37 @@ class SetQuestions : AppCompatActivity()  {
             override fun onBindViewHolder(view: ViewHolder, position: Int) {
                 view.answerText.text = answers[position].text
                 view.answerValue.text = answers[position].explanation
+                view.answerText.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                        answers[position].text = p0.toString()
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+                })
+                view.answerValue.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                        answers[position].explanation = p0.toString()
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+                })
             }
 
             override fun getItemCount(): Int {
                 return answers.size
             }
 
-            inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+            inner class ViewHolder(val view: View): RecyclerView.ViewHolder(view) {
                 val answerText = view.findViewById<TextView>(R.id.answer_text)!!
                 val answerValue = view.findViewById<TextView>(R.id.answer_value)!!
-                init {
-                    answerText.addTextChangedListener(object : TextWatcher {
-                        override fun afterTextChanged(p0: Editable?) {
-                            answers[position].text = p0.toString()
-                        }
-
-                        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-
-                        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-                    })
-                    answerValue.addTextChangedListener(object : TextWatcher {
-                        override fun afterTextChanged(p0: Editable?) {
-                            answers[position].explanation = p0.toString()
-                        }
-
-                        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-
-                        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-                    })
-                }
             }
         }
 
@@ -253,7 +256,37 @@ class SetQuestions : AppCompatActivity()  {
             override fun onBindViewHolder(view: ViewHolder, position: Int) {
                 view.answerText.text = answers[position].text
                 view.answerValue.text = answers[position].score.toString()
-                view.positionInList = position
+                view.answerText.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                        answers[position].text = p0.toString()
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+                })
+                view.answerValue.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                        val inputText: String = p0.toString()
+                        val intInput: Float? = inputText.toFloatOrNull()
+                        when {
+                            inputText == "" -> return
+                            intInput == null -> {
+                                Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
+                                return
+                            }
+                            else -> answers[position].score = intInput
+                        }
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+                })
             }
 
             override fun getItemCount(): Int {
@@ -263,40 +296,7 @@ class SetQuestions : AppCompatActivity()  {
             inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
                 val answerText = view.findViewById<TextView>(R.id.answer_text)!!
                 val answerValue = view.findViewById<TextView>(R.id.answer_value)!!
-                var positionInList = 0
-                init {
-                    answerText.addTextChangedListener(object : TextWatcher {
-                        override fun afterTextChanged(p0: Editable?) {
-                            answers[positionInList].text = p0.toString()
-                        }
-
-                        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-
-                        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-                    })
-                    answerValue.addTextChangedListener(object : TextWatcher {
-                        override fun afterTextChanged(p0: Editable?) {
-                            val inputText: String = p0.toString()
-                            val intInput: Float? = inputText.toFloatOrNull()
-                            when {
-                                inputText == "" -> return
-                                intInput == null -> {
-                                    Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
-                                    return
-                                }
-                                else -> answers[positionInList].score = intInput
-                            }
-                        }
-
-                        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-
-                        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-                    })
-                }
+                val context = view.context!!
             }
         }
 
@@ -308,7 +308,21 @@ class SetQuestions : AppCompatActivity()  {
             override fun onBindViewHolder(view: ViewHolder, position: Int) {
                 view.answerText.text = answers[position].text
                 view.connectionList.layoutManager = LinearLayoutManager(view.ctx)
+                Log.d("Position", position.toString())
+                Log.d("Answer!:", answers[position].toString())
+                Log.d("Connections!:", answers[position].connections.toString())
                 view.connectionList.adapter = ConnectionAdapter(answers[position].connections)
+                view.answerText.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                        answers[position].text = p0.toString()
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+                })
             }
 
             override fun getItemCount(): Int {
@@ -319,10 +333,29 @@ class SetQuestions : AppCompatActivity()  {
                 val answerText = view.findViewById<TextView>(R.id.answer_text)!!
                 val connectionList = view.findViewById<RecyclerView>(R.id.connection_list)!!
                 val ctx = view.context!!
-                init {
-                    answerText.addTextChangedListener(object : TextWatcher {
+            }
+
+            inner class ConnectionAdapter(val connections: ArrayList<NeuroTest.Connection>) : RecyclerView.Adapter<ConnectionAdapter.ViewHolder>() {
+                override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
+                    return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer_with_connection_connection, parent, false))
+                }
+
+
+                override fun onBindViewHolder(view: ViewHolder, connnection_position: Int) {
+                    view.resultText.text = connections[connnection_position].result.text
+                    view.answerWeight.text = connections[connnection_position].weight.toString()
+                    view.answerWeight.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(p0: Editable?) {
-                            answers[position].text = p0.toString()
+                            val inputText: String = p0.toString()
+                            val intInput: Float? = inputText.toFloatOrNull()
+                            when {
+                                inputText == "" -> return
+                                intInput == null -> {
+                                    Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
+                                    return
+                                }
+                                else -> connections[connnection_position].weight = intInput
+                            }
                         }
 
                         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -332,19 +365,6 @@ class SetQuestions : AppCompatActivity()  {
                         }
                     })
                 }
-            }
-
-            inner class ConnectionAdapter(val connections: ArrayList<NeuroTest.Connection>) : RecyclerView.Adapter<ConnectionAdapter.ViewHolder>() {
-                override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
-                    return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_answer_with_connection_connection, parent, false))
-                }
-
-
-                override fun onBindViewHolder(view: ViewHolder, position: Int) {
-                    view.resultText.text = connections[position].result.text
-                    view.answerWeight.text = connections[position].weight.toString()
-                    view.pos = position
-                }
 
                 override fun getItemCount(): Int {
                     return connections.size
@@ -353,30 +373,7 @@ class SetQuestions : AppCompatActivity()  {
                 inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
                     val resultText = view.findViewById<TextView>(R.id.result_text)!!
                     val answerWeight = view.findViewById<TextView>(R.id.weight)!!
-                    var pos = 0
-                    init {
-                        answerWeight.addTextChangedListener(object : TextWatcher {
-                            override fun afterTextChanged(p0: Editable?) {
-                                val inputText: String = p0.toString()
-                                val intInput: Float? = inputText.toFloatOrNull()
-                                when {
-                                    inputText == "" -> return
-                                    intInput == null -> {
-                                        Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
-                                        return
-                                    }
-                                    else -> connections[pos].weight = intInput
-                                }
-                                Log.d("AAA", pos.toString())
-                            }
-
-                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                            }
-
-                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                            }
-                        })
-                    }
+                    val context = view.context!!
                 }
             }
         }
