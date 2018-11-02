@@ -1,4 +1,4 @@
-@file:Suppress("UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST", "UNUSED_PARAMETER", "DEPRECATION")
 
 package com.example.m0ksem.imprtest.TestCreate.SetResults
 
@@ -28,14 +28,14 @@ import com.example.m0ksem.imprtest.Test
 class SetResults : AppCompatActivity() {
 
     private lateinit var adapter: ResultAdapter
-    lateinit var result_list: RecyclerView
+    lateinit var resultList: RecyclerView
     var type: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_set_results)
-        result_list = this.findViewById<RecyclerView>(R.id.create_test_results_list)
-        result_list.layoutManager = LinearLayoutManager(this)
+        resultList = this.findViewById(R.id.create_test_results_list)
+        resultList.layoutManager = LinearLayoutManager(this)
         type = intent.getStringExtra("type")
         Log.d("TYPE", type)
         if (type == "answers_with_score") {
@@ -53,7 +53,7 @@ class SetResults : AppCompatActivity() {
             }
             adapter = ResultWithConnectionAdapter(results as ArrayList<Test.Result>)
         }
-        result_list.adapter = adapter
+        resultList.adapter = adapter
 
         val header: ConstraintLayout = this.findViewById(R.id.header)!!
         val vto = header.viewTreeObserver
@@ -81,6 +81,7 @@ class SetResults : AppCompatActivity() {
             result.text = str
             adapter.add(result)
         }
+        findViewById<EditText>(R.id.new_tag_input).setText("")
     }
 
     inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
@@ -111,7 +112,7 @@ class SetResults : AppCompatActivity() {
 
     fun deleteResult(view: View) {
         val item: ConstraintLayout = view.parent.parent as ConstraintLayout
-        val pos: Int = result_list.getChildAdapterPosition(item)
+        val pos: Int = resultList.getChildAdapterPosition(item)
         adapter.delete(pos)
     }
 
@@ -164,7 +165,7 @@ open class ResultAdapter(open val results: ArrayList<Test.Result>) : RecyclerVie
 }
 
 
-class ResultWithScoreAdapter(override val results: ArrayList<Test.Result>) : ResultAdapter(results as ArrayList<Test.Result>) {
+class ResultWithScoreAdapter(override val results: ArrayList<Test.Result>) : ResultAdapter(results) {
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_score_result, parent, false))
     }
@@ -227,7 +228,7 @@ class ResultWithScoreAdapter(override val results: ArrayList<Test.Result>) : Res
     }
 }
 
-class ResultWithConnectionAdapter(override val results: ArrayList<Test.Result>) : ResultAdapter(results as ArrayList<Test.Result>) {
+class ResultWithConnectionAdapter(override val results: ArrayList<Test.Result>) : ResultAdapter(results) {
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.create_test_score_result, parent, false))
     }

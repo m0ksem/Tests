@@ -154,12 +154,15 @@ class SetQuestions : AppCompatActivity()  {
             } else if (type == "answers_with_string") {
                 questions[position].answers.add(StringTest.Question.Answer(answer, ""))
             } else if (type == "answers_with_connection") {
-                val default_connections: ArrayList<NeuroTest.Connection> = intent.getSerializableExtra("default_connections") as ArrayList<NeuroTest.Connection>
-                val new_connections: ArrayList<NeuroTest.Connection> = ArrayList()
-                for (el: NeuroTest.Connection in default_connections) {
-                    new_connections.add(el.copy())
-                }
-                questions[position].answers.add(NeuroTest.Question.Answer(answer, new_connections))
+                if (intent.getSerializableExtra("default_connections") != null) {
+                    val defaultConnections: ArrayList<NeuroTest.Connection> = intent.getSerializableExtra("default_connections") as ArrayList<NeuroTest.Connection>
+                    val newConnections: ArrayList<NeuroTest.Connection> = ArrayList()
+                    for (el: NeuroTest.Connection in defaultConnections) {
+                        newConnections.add(el.copy())
+                    }
+                    questions[position].answers.add(NeuroTest.Question.Answer(answer, newConnections))
+                } else  questions[position].answers.add(NeuroTest.Question.Answer(answer, ArrayList()))
+
             }
             notifyDataSetChanged()
         }
@@ -172,14 +175,10 @@ class SetQuestions : AppCompatActivity()  {
         override fun onBindViewHolder(view: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
             view.questionText.text = questions[position].text
             view.answers.layoutManager = LinearLayoutManager(view.ctx)
-            // TODO() Поменять тип адаптера в зависимости от типа теста
-            if (type == "answers_with_score") {
-                view.answers.adapter = AnswersWithScoreAdapter(questions[position].answers as ArrayList<ScoreTest.Question.Answer>)
-            } else if (type == "answers_with_string") {
-                view.answers.adapter = AnswersWithStringAdapter(questions[position].answers as ArrayList<StringTest.Question.Answer>)
-            }
-            else if (type == "answers_with_connection") {
-                view.answers.adapter = AnswersWithConnectionAdapter(questions[position].answers as ArrayList<NeuroTest.Question.Answer>)
+            when (type) {
+                "answers_with_score" -> view.answers.adapter = AnswersWithScoreAdapter(questions[position].answers as ArrayList<ScoreTest.Question.Answer>)
+                "answers_with_string" -> view.answers.adapter = AnswersWithStringAdapter(questions[position].answers as ArrayList<StringTest.Question.Answer>)
+                "answers_with_connection" -> view.answers.adapter = AnswersWithConnectionAdapter(questions[position].answers as ArrayList<NeuroTest.Question.Answer>)
             }
         }
 
@@ -216,7 +215,7 @@ class SetQuestions : AppCompatActivity()  {
                 view.answerValue.text = answers[position].explanation
                 view.answerText.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(p0: Editable?) {
-                        answers[position].text = p0.toString()
+                        answers[view.adapterPosition].text = p0.toString()
                     }
 
                     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -227,7 +226,7 @@ class SetQuestions : AppCompatActivity()  {
                 })
                 view.answerValue.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(p0: Editable?) {
-                        answers[position].explanation = p0.toString()
+                        answers[view.adapterPosition].explanation = p0.toString()
                     }
 
                     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -258,7 +257,7 @@ class SetQuestions : AppCompatActivity()  {
                 view.answerValue.text = answers[position].score.toString()
                 view.answerText.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(p0: Editable?) {
-                        answers[position].text = p0.toString()
+                        answers[view.adapterPosition].text = p0.toString()
                     }
 
                     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -277,7 +276,7 @@ class SetQuestions : AppCompatActivity()  {
                                 Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
                                 return
                             }
-                            else -> answers[position].score = intInput
+                            else -> answers[view.adapterPosition].score = intInput
                         }
                     }
 
@@ -308,13 +307,10 @@ class SetQuestions : AppCompatActivity()  {
             override fun onBindViewHolder(view: ViewHolder, position: Int) {
                 view.answerText.text = answers[position].text
                 view.connectionList.layoutManager = LinearLayoutManager(view.ctx)
-                Log.d("Position", position.toString())
-                Log.d("Answer!:", answers[position].toString())
-                Log.d("Connections!:", answers[position].connections.toString())
                 view.connectionList.adapter = ConnectionAdapter(answers[position].connections)
                 view.answerText.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(p0: Editable?) {
-                        answers[position].text = p0.toString()
+                        answers[view.adapterPosition].text = p0.toString()
                     }
 
                     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -341,9 +337,9 @@ class SetQuestions : AppCompatActivity()  {
                 }
 
 
-                override fun onBindViewHolder(view: ViewHolder, connnection_position: Int) {
-                    view.resultText.text = connections[connnection_position].result.text
-                    view.answerWeight.text = connections[connnection_position].weight.toString()
+                override fun onBindViewHolder(view: ViewHolder, position: Int) {
+                    view.resultText.text = connections[position].result.text
+                    view.answerWeight.text = connections[position].weight.toString()
                     view.answerWeight.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(p0: Editable?) {
                             val inputText: String = p0.toString()
@@ -354,7 +350,7 @@ class SetQuestions : AppCompatActivity()  {
                                     Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
                                     return
                                 }
-                                else -> connections[connnection_position].weight = intInput
+                                else -> connections[view.adapterPosition].weight = intInput
                             }
                         }
 

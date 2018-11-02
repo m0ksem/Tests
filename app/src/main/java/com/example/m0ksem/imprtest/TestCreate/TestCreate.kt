@@ -2,9 +2,11 @@
 
 package com.example.m0ksem.imprtest.TestCreate
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -61,6 +63,7 @@ class TestCreate : AppCompatActivity() {
                 for (i in 0 until results!!.size) {
                     defaultConnections.add(NeuroTest.Connection(results!![i], 0f))
                 }
+                // TODO() Тут как бы результаты совсем другие обьекты
                 intent.putExtra("default_connections", defaultConnections as Serializable)
                 for (question in questions!!) {
                     for (answer in question.answers) {
@@ -72,7 +75,7 @@ class TestCreate : AppCompatActivity() {
                         if (results!!.size > answer.connections.size) {
                             val newElementsCount = results!!.size - answer.connections.size
                             for (i in 0 until newElementsCount) {
-                                answer.connections.add(NeuroTest.Connection(results!![results!!.size - i], 0f))
+                                answer.connections.add(NeuroTest.Connection(results!![results!!.size - 1 - i], 0f))
                             }
                         }
                     }
@@ -112,13 +115,14 @@ class TestCreate : AppCompatActivity() {
                 intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
                 startActivityForResult(intent, 4)
             }
-            "answers_with_string" -> // TODO() Поменять текст, потому что тут "Вам не нужно создавать результаты отдельно
+            "answers_with_string" ->
                 Toast.makeText(this, R.string.create_test_you_no_need_results, Toast.LENGTH_LONG).show()
             else -> Toast.makeText(this, R.string.create_test_at_first_select_type, Toast.LENGTH_LONG).show()
         }
         overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -127,13 +131,10 @@ class TestCreate : AppCompatActivity() {
         }
         if (requestCode == 1){
             type = data.getStringExtra("type")
-            if (type == "answers_with_score") {
-                findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type)+ " " + resources.getString(R.string.create_test_type_score)
-            } else if (type == "answers_with_string") {
-                findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type) + " " + resources.getString(R.string.create_test_type_string)
-            }
-            else if (type == "answers_with_connection") {
-                findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type) + " " + "CONNETIONS"//resources.getString(R.string.create_test_type_string)
+            when (type) {
+                "answers_with_score" -> findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type)+ " " + resources.getString(R.string.create_test_type_score)
+                "answers_with_string" -> findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type) + " " + resources.getString(R.string.create_test_type_string)
+                "answers_with_connection" -> findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type) + " " + resources.getString(R.string.create_test_type_neuro)
             }
             tipsView.text = tips[2]
         }
@@ -147,6 +148,7 @@ class TestCreate : AppCompatActivity() {
         }
         if (requestCode == 4) {
             results = data.getStringArrayListExtra("results") as ArrayList<Test.Result>
+            Log.d("Result imported", results.toString())
             tipsView.text = tips[4]
         }
     }
@@ -162,6 +164,7 @@ class TestCreate : AppCompatActivity() {
             val test = when (type) {
                 "answers_with_score" -> ScoreTest(testName, userName)
                 "answers_with_string" -> StringTest(testName, userName)
+                "answers_with_connection" -> StringTest(testName, userName)
                 else -> null
             }
             when (test) {

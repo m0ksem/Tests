@@ -63,6 +63,7 @@ class ChooseTags : AppCompatActivity() {
 
     fun addTag(view: View) {
         val str: String = findViewById<EditText>(R.id.new_tag_input).text.toString()
+        findViewById<EditText>(R.id.new_tag_input).setText("")
         adapter.add(str)
     }
 
@@ -74,7 +75,6 @@ class ChooseTags : AppCompatActivity() {
         save()
         super.onBackPressed()
     }
-
 
     override fun finish() {
         super.finish()

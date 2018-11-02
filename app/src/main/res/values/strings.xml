@@ -24,6 +24,10 @@
     <string name="sign_in_button_text">Авторизация</string>
     <string name="sign_out_button_text">Регистрация</string>
     <string name="forgot_password">Забыл пароль?</string>
+    <string name="error_enter_login">Введите логин</string>
+    <string name="error_invalid_login">Неверный логин</string>
+    <string name="error_enter_password">Введите пароль</string>
+    <string name="error_invalid_password">Неверный пароль</string>
 
     <string name="accept">Да</string>
     <string name="decline">Нет</string>

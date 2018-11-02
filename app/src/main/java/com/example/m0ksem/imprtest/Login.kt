@@ -1,6 +1,7 @@
+@file:Suppress("UNUSED_PARAMETER", "DEPRECATION")
+
 package com.example.m0ksem.imprtest
 
-import android.animation.LayoutTransition
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,7 +12,6 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_login.*
 import android.view.WindowManager
 import android.os.Build
-import android.view.ViewGroup
 import com.example.m0ksem.imprtest.TestList.TestsList
 
 
@@ -27,27 +27,27 @@ class Login : AppCompatActivity() {
             window.navigationBarColor = resources.getColor(R.color.colorGradientBackgroundBottom)
             window.statusBarColor = resources.getColor(R.color.colorGradientBackgroundTop)
         }
-//        findViewById<ViewGroup>(R.id.loginFormLayout).layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
         login_hello.setText(R.string.hello)
     }
 
     fun onLoginButtonClick(view: View) {
         when {
             login_input.text.toString() == "" -> {
-                LoginErrorMessage.text = "Enter login"
-                return Unit
+                LoginErrorMessage.setText(R.string.error_enter_login)
+                login_password.setText("")
             }
-            LoginPasswordInput.text.toString() == "" -> {
-                LoginErrorMessage.text = "Enter password"
-                return Unit
+            login_password.text.toString() == "" -> {
+                LoginErrorMessage.setText(R.string.error_enter_password)
+                login_password.setText("")
             }
-//            LoginInput.text.toString() != "" ->  {
-//                LoginErrorMessage.text = "Incorrect login"
-//                return Unit
-//            }
-            LoginPasswordInput.text.toString() != "123" -> {
-                LoginErrorMessage.text = "Incorrect password"
-                return Unit
+            login_input.text.toString() == "" && login_input.text.toString().length > 20 ->  {
+                LoginErrorMessage.setText(R.string.error_invalid_login)
+                login_input.setText("")
+                login_password.setText("")
+            }
+            login_password.text.toString() == "" -> {
+                LoginErrorMessage.setText(R.string.error_invalid_password)
+                login_password.setText("")
             }
             else -> {
                 LoginErrorMessage.text = ""
