@@ -19,7 +19,9 @@ abstract class Test(val name: String = "Псих тест", val author: String =
         open class Answer(var text: String) : Serializable
     }
 
-    open class Result(var text: String) : Serializable
+    open class Result(var text: String) : Serializable {
+        var id: Int = 0
+    }
 }
 
 class ScoreTest(name: String, author: String) : Test(name, author) {
@@ -53,7 +55,7 @@ class NeuroTest(name: String, author: String) : Test(name, author) {
         class Answer(text: String, val connections: ArrayList<Connection> = ArrayList()) : Test.Question.Answer(text)
     }
 
-    class Connection(val result: Test.Result, var weight: Float) : Serializable {
+    class Connection(var result: Test.Result, var weight: Float) : Serializable {
         fun copy(): Connection {
             return Connection(result, weight)
         }

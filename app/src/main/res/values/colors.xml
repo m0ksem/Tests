@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#B06AB3</color>
-    <color name="colorPrimaryDark">#B06AB3</color>
-    <color name="colorAccent">#b06ab3</color>
+    <color name="colorPrimary">#926ab3</color>
+    <color name="colorPrimaryDark">#926ab3</color>
+    <color name="colorAccent">#926ab3</color>
 
     <color name="colorButtonsBackground">#ffffff</color>
     <color name="colorTextOnButtons">#ffffff</color>
@@ -23,17 +23,7 @@
     <color name="loginInputBackground">#ffffff</color>
     <color name="loginInputTextColor">#95000000</color>6
 
-    <!--https://coolors.co/8e94f2-9fa0ff-bbadff-dab6fc-fdc5f5-->
-    <color name="colorGradientBackgroundTop">#b06ab3</color>
-    <color name="colorGradientBackgroundCenter">#7B69C7</color>
-    <color name="colorGradientBackgroundBottom">#4568DC</color>
-
-    <!--<color name="colorGradientBackgroundTop">#A770EF</color>-->
-    <!--<color name="colorGradientBackgroundCenter">#CF8BF3</color>-->
-    <!--<color name="colorGradientBackgroundBottom">#FDB99B</color>-->
-
-    <!--<color name="colorGradientBackgroundTop">#ffb8d1</color>-->
-    <!--<color name="colorGradientBackgroundCenter">#c9c9ee</color>-->
-    <!--<color name="colorGradientBackgroundBottom">#bfdbf7</color>-->
-
+    <color name="colorGradientBackgroundTop">#926ab3</color>
+    <color name="colorGradientBackgroundCenter">#7b69c7</color>
+    <color name="colorGradientBackgroundBottom">#7245dc</color>
 </resources>

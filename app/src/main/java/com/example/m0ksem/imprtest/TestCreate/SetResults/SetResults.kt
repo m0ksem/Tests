@@ -2,6 +2,7 @@
 
 package com.example.m0ksem.imprtest.TestCreate.SetResults
 
+import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AppCompatActivity
@@ -10,14 +11,12 @@ import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.example.m0ksem.imprtest.NeuroTest
@@ -38,6 +37,7 @@ class SetResults : AppCompatActivity() {
         resultList.layoutManager = LinearLayoutManager(this)
         type = intent.getStringExtra("type")
         Log.d("TYPE", type)
+
         if (type == "answers_with_score") {
             val results: ArrayList<ScoreTest.Result> = if ( intent.getSerializableExtra("results") != null) {
                 intent.getSerializableExtra("results") as ArrayList<ScoreTest.Result>
@@ -60,7 +60,7 @@ class SetResults : AppCompatActivity() {
         vto.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 header.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val startHeight = header.measuredHeight + 20
+                val startHeight = header.measuredHeight
                 val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
                 animation.interpolator = AccelerateInterpolator()
                 animation.duration = 300
@@ -68,6 +68,31 @@ class SetResults : AppCompatActivity() {
                 header.startAnimation(animation)
             }
         })
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            val window = window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.navigationBarColor = resources.getColor(R.color.colorGradientBackgroundBottom)
+        }
+    }
+
+    inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
+        override fun applyTransformation(interpolatedTime: Float, transformation: Transformation) {
+            val newHeight: Int
+
+            if (mView.height + 1 != mToHeight) {
+                newHeight = (mFromHeight + (mToHeight - mFromHeight) * interpolatedTime).toInt()
+                mView.layoutParams.height = newHeight
+                mView.requestLayout()
+            } else {
+                mView.layoutParams.height = mView.height - 1
+            }
+        }
+
+        override fun willChangeBounds(): Boolean {
+            return true
+        }
     }
 
     fun addResult(view: View) {
@@ -79,25 +104,10 @@ class SetResults : AppCompatActivity() {
         } else if (type == "answers_with_connection") {
             val result = NeuroTest.Result(str, 0f, 0f, 0f)
             result.text = str
+            result.id = adapter.results.size
             adapter.add(result)
         }
         findViewById<EditText>(R.id.new_tag_input).setText("")
-    }
-
-    inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
-        override fun applyTransformation(interpolatedTime: Float, transformation: Transformation) {
-            val newHeight: Int
-
-            if (mView.height != mToHeight) {
-                newHeight = (mFromHeight + (mToHeight - mFromHeight) * interpolatedTime).toInt()
-                mView.layoutParams.height = newHeight
-                mView.requestLayout()
-            }
-        }
-
-        override fun willChangeBounds(): Boolean {
-            return true
-        }
     }
 
     fun back(view: View){

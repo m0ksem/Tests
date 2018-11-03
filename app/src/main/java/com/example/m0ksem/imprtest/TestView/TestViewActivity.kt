@@ -1,6 +1,7 @@
 package com.example.m0ksem.imprtest.TestView
 
 import android.content.Intent
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -10,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.*
 import com.example.m0ksem.imprtest.*
@@ -43,6 +45,14 @@ class TestViewActivity : AppCompatActivity() {
         button = this.findViewById(R.id.nav_bar)!!
         button.alpha = 0.0F
         button.isClickable = false
+        if (Build.VERSION.SDK_INT >= 21) {
+            window.setFlags(
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+        }
+        val header = findViewById<LinearLayout>(R.id.header)
+        header.setPadding(header.paddingLeft, (50 * resources.displayMetrics.density).toInt(), header.paddingRight, header.paddingBottom)
     }
 
     fun back(view: View){

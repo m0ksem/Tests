@@ -1,5 +1,6 @@
 package com.example.m0ksem.imprtest.TestCreate.ChooseTags
 
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -12,8 +13,9 @@ import com.example.m0ksem.imprtest.R
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.view.animation.AccelerateInterpolator
-import android.support.v4.os.HandlerCompat.postDelayed
 import android.view.ViewTreeObserver
+import android.view.WindowManager
+import android.widget.LinearLayout
 
 
 @Suppress("UNUSED_PARAMETER")
@@ -35,24 +37,31 @@ class ChooseTags : AppCompatActivity() {
         vto.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 header.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val startHeight = header.measuredHeight + 20
-                val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
+                val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), header.measuredHeight)
                 animation.interpolator = AccelerateInterpolator()
                 animation.duration = 300
                 header.animation = animation
                 header.startAnimation(animation)
             }
         })
+        if (Build.VERSION.SDK_INT >= 21) {
+            val window = window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.navigationBarColor = resources.getColor(R.color.colorGradientBackgroundBottom)
+        }
     }
 
     inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
         override fun applyTransformation(interpolatedTime: Float, transformation: Transformation) {
             val newHeight: Int
 
-            if (mView.height != mToHeight) {
+            if (mView.height + 1 != mToHeight) {
                 newHeight = (mFromHeight + (mToHeight - mFromHeight) * interpolatedTime).toInt()
                 mView.layoutParams.height = newHeight
                 mView.requestLayout()
+            } else {
+                mView.layoutParams.height = mView.height - 1
             }
         }
 

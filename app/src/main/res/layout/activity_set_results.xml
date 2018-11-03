@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient"
-    tools:context=".TestCreate.SetResults.SetResults">
+    tools:context=".TestCreate.SetResults.SetResults"
+    android:fitsSystemWindows="true">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/header"

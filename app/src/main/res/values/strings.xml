@@ -11,6 +11,8 @@
     <string name="add_button">+</string>
     <string name="delete_button">✖</string>
     <string name="exit_button">✖</string>
+    <string name="yes">Да</string>
+    <string name="cancel">Отмена</string>
 
     <string name="test_question_count">Количество вопросов</string>
     <string name="test_category">Категория</string>
@@ -60,6 +62,12 @@
 
     <string name="create_test_choose_type">Выбери тип теста</string>
     <string name="create_test_selected_type">Выберанный тип теста </string>
+
+    <string name="create_test_change_type_question">Изменить тип?</string>
+    <string name="create_test_change_type_warning">Изменив тип вы потеряете созданные вопросы и результаты.</string>
+    <string name="create_test_exit_creation_question">Вернуться назад?</string>
+    <string name="create_test_exit_creation_warning">Ваш тест не сохранён.</string>
+
     <string name="create_test_choose_tags">Выберите теги</string>
     <string name="create_test_set_question">Составьте список вопросов</string>
     <string name="create_test_test_results_for_questions">Выберите результаты для теста</string>
@@ -86,6 +94,4 @@
     <string name="your_result">Ваш результат</string>
     <string name="find_new_tests">Просмотреть ещё тесты</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

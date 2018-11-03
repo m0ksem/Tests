@@ -4,6 +4,7 @@ package com.example.m0ksem.imprtest.TestCreate
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +19,10 @@ import com.example.m0ksem.imprtest.TestCreate.ChooseType.ChooseType
 import com.example.m0ksem.imprtest.TestCreate.SetQuestions.SetQuestions
 import com.example.m0ksem.imprtest.TestCreate.SetResults.SetResults
 import java.io.Serializable
+import android.support.v7.app.AlertDialog
+import android.view.WindowManager
+import kotlin.math.log
+
 
 @Suppress("UNCHECKED_CAST")
 class TestCreate : AppCompatActivity() {
@@ -32,11 +37,15 @@ class TestCreate : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_create)
-        tags = ArrayList()
-        questions = ArrayList()
         tipsView = findViewById(R.id.create_test_tips)
         tips = resources.getStringArray(R.array.create_test_under)
         tipsView.text = tips[0]
+        if (Build.VERSION.SDK_INT >= 21) {
+            val window = window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.navigationBarColor = resources.getColor(R.color.colorGradientBackgroundBottom)
+        }
     }
 
     fun nameEnter(view: View) {
@@ -44,17 +53,59 @@ class TestCreate : AppCompatActivity() {
     }
 
     fun back(view: View){
-        finish()
+        onBackPressed()
+    }
+
+    override fun onBackPressed() {
+        val testName: String = (findViewById<View>(R.id.create_test_name) as EditText).text.toString()
+        if (testName == "" && type == null && questions == null && tags == null) {
+            super.onBackPressed()
+            return
+        }
+
+        val builder = AlertDialog.Builder(this@TestCreate)
+
+        builder.setTitle(resources.getString(R.string.create_test_exit_creation_question))
+        builder.setMessage(resources.getString(R.string.create_test_exit_creation_warning))
+        builder.setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+            super.onBackPressed()
+        }
+        builder.setNeutralButton(resources.getString(R.string.cancel)) { _,_ -> }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 
     fun chooseType(view: View) {
-        val intent = Intent(this, ChooseType::class.java)
-        intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
-        startActivityForResult(intent, 1)
-        overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
+        if (type == null) {
+            val intent = Intent(this, ChooseType::class.java)
+            intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
+            startActivityForResult(intent, 1)
+            overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
+        } else {
+            val builder = AlertDialog.Builder(this@TestCreate)
+
+            builder.setTitle(resources.getString(R.string.create_test_change_type_question))
+            builder.setMessage(resources.getString(R.string.create_test_change_type_warning))
+            builder.setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+                questions = null
+                results = null
+                val intent = Intent(this, ChooseType::class.java)
+                intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
+                startActivityForResult(intent, 1)
+                overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
+            }
+            builder.setNeutralButton(resources.getString(R.string.cancel)) { _,_ -> }
+
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+        }
     }
 
     fun setQuestions(view: View) {
+        if (questions == null) {
+            questions = ArrayList()
+        }
         if (type != null) {
             val intent = Intent(this, SetQuestions::class.java)
             intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
@@ -65,18 +116,29 @@ class TestCreate : AppCompatActivity() {
                 }
                 // TODO() Тут как бы результаты совсем другие обьекты
                 intent.putExtra("default_connections", defaultConnections as Serializable)
+                val resultsSize = results!!.size
                 for (question in questions!!) {
                     for (answer in question.answers) {
-                        for (connection in (answer as NeuroTest.Question.Answer).connections) {
-                            if (results!!.indexOf(connection.result) != -1) {
-                                answer.connections.remove(connection)
+                        if (resultsSize > 0) {
+                            val connectionsLastIndex: Int = (answer as NeuroTest.Question.Answer).connections.size - 1
+                            val connections = answer.connections
+                            var connectionIndex = 0
+                            var resultIndex = 0
+                            while (resultIndex < resultsSize) {
+                                if (results!![resultIndex].id > connectionsLastIndex || resultIndex >= answer.connections.size) {
+                                    answer.connections.add(NeuroTest.Connection(results!![resultIndex], 0f))
+                                } else if (results!![resultIndex].id == connections[connectionIndex].result.id) {
+                                    connections[connectionIndex].result = results!![resultIndex]
+                                } else {
+                                    answer.connections.removeAt(connectionIndex)
+                                    connectionIndex--
+                                    resultIndex--
+                                }
+                                resultIndex++
+                                connectionIndex++
                             }
-                        }
-                        if (results!!.size > answer.connections.size) {
-                            val newElementsCount = results!!.size - answer.connections.size
-                            for (i in 0 until newElementsCount) {
-                                answer.connections.add(NeuroTest.Connection(results!![results!!.size - 1 - i], 0f))
-                            }
+                        } else {
+                            (answer as NeuroTest.Question.Answer).connections.clear()
                         }
                     }
                 }
@@ -92,6 +154,9 @@ class TestCreate : AppCompatActivity() {
     }
 
     fun chooseTags(view: View) {
+        if (tags == null) {
+            tags = ArrayList()
+        }
         val intent = Intent(this, ChooseTags::class.java)
         intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
         intent.putExtra("tags", tags)
@@ -99,7 +164,16 @@ class TestCreate : AppCompatActivity() {
         overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
     }
 
+    fun updateResultsId() {
+        results!!.forEachIndexed {index, el ->
+            el.id = index
+        }
+    }
+
     fun setResults(view: View) {
+        if (results == null) {
+            results = ArrayList()
+        }
         when (type) {
             "answers_with_score" -> {
                 val intent = Intent(this, SetResults::class.java)
@@ -111,6 +185,7 @@ class TestCreate : AppCompatActivity() {
             "answers_with_connection" -> {
                 val intent = Intent(this, SetResults::class.java)
                 intent.putExtra("type", type)
+                updateResultsId()
                 intent.putExtra("results", results)
                 intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
                 startActivityForResult(intent, 4)
@@ -132,9 +207,18 @@ class TestCreate : AppCompatActivity() {
         if (requestCode == 1){
             type = data.getStringExtra("type")
             when (type) {
-                "answers_with_score" -> findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type)+ " " + resources.getString(R.string.create_test_type_score)
-                "answers_with_string" -> findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type) + " " + resources.getString(R.string.create_test_type_string)
-                "answers_with_connection" -> findViewById<TextView>(R.id.selected_type).text = resources.getString(R.string.create_test_selected_type) + " " + resources.getString(R.string.create_test_type_neuro)
+                "answers_with_score" -> {
+                    findViewById<TextView>(R.id.select_type).text = resources.getString(R.string.create_test_selected_type)
+                    findViewById<TextView>(R.id.selected_test_type).text = resources.getString(R.string.create_test_type_score).toLowerCase()
+                }
+                "answers_with_string" -> {
+                    findViewById<TextView>(R.id.select_type).text = resources.getString(R.string.create_test_selected_type)
+                    findViewById<TextView>(R.id.selected_test_type).text = resources.getString(R.string.create_test_type_string).toLowerCase()
+                }
+                "answers_with_connection" -> {
+                    findViewById<TextView>(R.id.select_type).text = resources.getString(R.string.create_test_selected_type)
+                    findViewById<TextView>(R.id.selected_test_type).text = resources.getString(R.string.create_test_type_neuro).toLowerCase()
+                }
             }
             tipsView.text = tips[2]
         }
@@ -149,17 +233,19 @@ class TestCreate : AppCompatActivity() {
         if (requestCode == 4) {
             results = data.getStringArrayListExtra("results") as ArrayList<Test.Result>
             Log.d("Result imported", results.toString())
+            if (results!!.size > 0) Log.d("RESULT1", results!![0].toString())
             tipsView.text = tips[4]
         }
     }
 
     fun save(view: View) {
-        if (type == null || questions == null || tags == null) {
+        val testName: String = (findViewById<View>(R.id.create_test_name) as EditText).text.toString()
+        if (testName == "" || type == null || questions == null || tags == null) {
             Toast.makeText(view.context, "End your test creation", Toast.LENGTH_SHORT).show()
             return
         }
         else {
-            val testName: String = (findViewById<View>(R.id.create_test_name) as EditText).text.toString()
+
             val userName: String = intent.getStringExtra("username")
             val test = when (type) {
                 "answers_with_score" -> ScoreTest(testName, userName)

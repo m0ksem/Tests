@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient"
-    tools:context=".TestCreate.ChooseTags.ChooseTags">
+    tools:context=".TestCreate.ChooseTags.ChooseTags"
+    android:fitsSystemWindows="true">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/header"
@@ -30,12 +31,11 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_marginBottom="20dp"
                 android:gravity="left|center_vertical"
                 android:text="@string/create_test_choose_type"
                 android:textColor="@color/colorBackground"
-                android:textSize="24dp"
+                android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/back_button"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -57,166 +57,180 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/colorBackgroundDarken"
-        android:orientation="vertical"
-        android:padding="25dp"
+        android:layout_marginTop="8dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header">
 
         <LinearLayout
-            android:id="@+id/create_test_choose_type_score"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_background"
-            android:onClick="onClick"
+            android:background="@color/colorBackgroundDarken"
             android:orientation="vertical"
-            android:paddingLeft="25dp"
-            android:paddingTop="18dp"
-            android:paddingRight="25dp">
+            android:padding="25dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header">
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/create_test_choose_type_score"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/create_test_type_score"
-                android:textColor="@color/colorTextHeader"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/button_bg_stroke"
+                android:onClick="onClick"
+                android:orientation="vertical"
+                android:paddingLeft="25dp"
+                android:paddingTop="18dp"
+                android:paddingRight="25dp"
+                android:paddingBottom="12dp">
 
-            <TextView
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/create_test_type_score"
+                    android:textColor="@color/colorTextHeader"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/create_test_type_score_info"
+                    android:textColor="@color/colorText" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
+                    android:text="@string/create_test_choose"
+                    android:textAlignment="textEnd" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/create_test_choose_type_string"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/create_test_type_score_info"
-                android:textColor="@color/colorText" />
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/button_bg_stroke"
+                android:onClick="onClick"
+                android:orientation="vertical"
+                android:paddingLeft="25dp"
+                android:paddingTop="18dp"
+                android:paddingRight="25dp"
+                android:paddingBottom="12dp">
 
-            <TextView
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/create_test_type_string"
+                    android:textColor="@color/colorTextHeader"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/create_test_type_string_info"
+                    android:textColor="@color/colorText" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
+                    android:text="@string/create_test_choose"
+                    android:textAlignment="textEnd" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/create_test_choose_type_neuro"
                 android:layout_width="match_parent"
-                android:layout_height="18dp"
-                android:text="@string/create_test_choose"
-                android:textAlignment="textEnd" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/button_bg_stroke"
+                android:onClick="onClick"
+                android:orientation="vertical"
+                android:paddingLeft="25dp"
+                android:paddingTop="18dp"
+                android:paddingRight="25dp"
+                android:paddingBottom="12dp">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/create_test_type_neuro"
+                    android:textColor="@color/colorTextHeader"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/create_test_type_neuro_info"
+                    android:textColor="@color/colorText" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
+                    android:text="@string/create_test_choose"
+                    android:textAlignment="textEnd" />
+
+            </LinearLayout>
+
+            <!--<LinearLayout-->
+            <!--android:id="@+id/create_test_choose_type_sequential"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:background="@drawable/rounded_background"-->
+            <!--android:onClick="onClick"-->
+            <!--android:orientation="vertical"-->
+            <!--android:paddingLeft="25dp"-->
+            <!--android:paddingRight="25dp"-->
+            <!--android:paddingTop="18dp">-->
+
+            <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/create_test_type_sequential"-->
+            <!--android:textColor="@color/colorTextHeader"-->
+            <!--android:textSize="20sp"-->
+            <!--android:textStyle="bold" />-->
+
+            <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginBottom="12dp"-->
+            <!--android:text="@string/create_test_type_list_info"-->
+            <!--android:textColor="@color/colorText" />-->
+
+            <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/create_test_choose"-->
+            <!--android:textAlignment="textEnd" />-->
+
+            <!--</LinearLayout>-->
+
+            <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/tag_list"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:paddingBottom="90dp"-->
+            <!--android:paddingLeft="25dp"-->
+            <!--android:paddingRight="25dp"-->
+            <!--android:paddingTop="25dp"-->
+            <!--android:animateLayoutChanges="false"-->
+            <!--android:clipToPadding="false"/>-->
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/create_test_choose_type_string"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_background"
-            android:onClick="onClick"
-            android:orientation="vertical"
-            android:paddingLeft="25dp"
-            android:paddingTop="18dp"
-            android:paddingRight="25dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/create_test_type_string"
-                android:textColor="@color/colorTextHeader"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/create_test_type_string_info"
-                android:textColor="@color/colorText" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="18dp"
-                android:text="@string/create_test_choose"
-                android:textAlignment="textEnd" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/create_test_choose_type_neuro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_background"
-            android:onClick="onClick"
-            android:orientation="vertical"
-            android:paddingLeft="25dp"
-            android:paddingTop="18dp"
-            android:paddingRight="25dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/create_test_type_neuro"
-                android:textColor="@color/colorTextHeader"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/create_test_type_neuro_info"
-                android:textColor="@color/colorText" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="18dp"
-                android:text="@string/create_test_choose"
-                android:textAlignment="textEnd" />
-
-        </LinearLayout>
-
-        <!--<LinearLayout-->
-        <!--android:id="@+id/create_test_choose_type_sequential"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:background="@drawable/rounded_background"-->
-        <!--android:onClick="onClick"-->
-        <!--android:orientation="vertical"-->
-        <!--android:paddingLeft="25dp"-->
-        <!--android:paddingRight="25dp"-->
-        <!--android:paddingTop="18dp">-->
-
-        <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/create_test_type_sequential"-->
-        <!--android:textColor="@color/colorTextHeader"-->
-        <!--android:textSize="20sp"-->
-        <!--android:textStyle="bold" />-->
-
-        <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="12dp"-->
-        <!--android:text="@string/create_test_type_list_info"-->
-        <!--android:textColor="@color/colorText" />-->
-
-        <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/create_test_choose"-->
-        <!--android:textAlignment="textEnd" />-->
-
-        <!--</LinearLayout>-->
-
-        <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/tag_list"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:paddingBottom="90dp"-->
-        <!--android:paddingLeft="25dp"-->
-        <!--android:paddingRight="25dp"-->
-        <!--android:paddingTop="25dp"-->
-        <!--android:animateLayoutChanges="false"-->
-        <!--android:clipToPadding="false"/>-->
-    </LinearLayout>
+    </ScrollView>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

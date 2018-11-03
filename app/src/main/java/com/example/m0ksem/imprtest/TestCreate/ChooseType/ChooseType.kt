@@ -2,6 +2,7 @@
 
 package com.example.m0ksem.imprtest.TestCreate.ChooseType
 
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -11,6 +12,8 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import com.example.m0ksem.imprtest.R
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.WindowManager
+import android.widget.LinearLayout
 
 class ChooseType : AppCompatActivity() {
 
@@ -22,24 +25,36 @@ class ChooseType : AppCompatActivity() {
         vto.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 header.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val startHeight = header.measuredHeight + 20
-                val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), startHeight)
+                val animation = SlideAnimation(header, intent.getIntExtra("header_height", 400), header.measuredHeight)
                 animation.interpolator = AccelerateInterpolator()
                 animation.duration = 300
                 header.animation = animation
                 header.startAnimation(animation)
             }
         })
+        if (Build.VERSION.SDK_INT >= 21) {
+            val window = window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.navigationBarColor = resources.getColor(R.color.colorGradientBackgroundBottom)
+//            getWindow().setFlags(
+//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//            )
+//            header.setPadding(header.paddingLeft, (50 * resources.displayMetrics.density).toInt(), header.paddingRight, header.paddingBottom)
+        }
     }
 
     inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
         override fun applyTransformation(interpolatedTime: Float, transformation: Transformation) {
             val newHeight: Int
 
-            if (mView.height != mToHeight) {
+            if (mView.height + 1 != mToHeight) {
                 newHeight = (mFromHeight + (mToHeight - mFromHeight) * interpolatedTime).toInt()
                 mView.layoutParams.height = newHeight
                 mView.requestLayout()
+            } else {
+                mView.layoutParams.height = mView.height - 1
             }
         }
 

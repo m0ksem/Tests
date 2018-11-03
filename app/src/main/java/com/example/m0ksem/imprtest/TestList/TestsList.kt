@@ -1,4 +1,4 @@
-@file:Suppress("UNUSED_PARAMETER")
+@file:Suppress("UNUSED_PARAMETER", "UNCHECKED_CAST")
 
 package com.example.m0ksem.imprtest.TestList
 
@@ -26,7 +26,6 @@ import kotlin.collections.ArrayList
 import android.content.ContentValues
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
 import com.example.m0ksem.imprtest.*
 
 
@@ -66,11 +65,12 @@ class TestsList() : AppCompatActivity(), Parcelable {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.navigationBarColor = resources.getColor(R.color.colorBackground)
             window.statusBarColor = resources.getColor(R.color.colorBackground)
-        }
 
+        }
         val button = this.findViewById<ConstraintLayout>(R.id.nav_bar)!!
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.open_activity_button_up))
 
+//        dbHelper.insert(WhoYouFromJojo)
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -302,15 +302,15 @@ class TestsList() : AppCompatActivity(), Parcelable {
             return list
         }
 
-        fun cleadDB() {
-            val db = this.writableDatabase
-            db?.execSQL("drop table Types;")
-            db?.execSQL("drop table Tests;")
-            db?.execSQL("drop table Questions")
-            db?.execSQL("drop table ScoreAnswers;")
-            db?.execSQL("drop table Results;")
-            onCreate(this.writableDatabase)
-        }
+//        fun cleadDB() {
+//            val db = this.writableDatabase
+//            db?.execSQL("drop table Types;")
+//            db?.execSQL("drop table Tests;")
+//            db?.execSQL("drop table Questions")
+//            db?.execSQL("drop table ScoreAnswers;")
+//            db?.execSQL("drop table Results;")
+//            onCreate(this.writableDatabase)
+//        }
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

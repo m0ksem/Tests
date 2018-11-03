@@ -25,7 +25,10 @@ class Login : AppCompatActivity() {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.navigationBarColor = resources.getColor(R.color.colorGradientBackgroundBottom)
-            window.statusBarColor = resources.getColor(R.color.colorGradientBackgroundTop)
+            getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
         }
         login_hello.setText(R.string.hello)
     }

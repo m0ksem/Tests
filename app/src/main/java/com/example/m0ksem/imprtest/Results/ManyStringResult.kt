@@ -1,12 +1,16 @@
 package com.example.m0ksem.imprtest.Results
 
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.m0ksem.imprtest.R
 
@@ -19,6 +23,14 @@ class ManyStringResult : AppCompatActivity() {
         val results = this.findViewById<RecyclerView>(R.id.test_results_list)
         results.layoutManager = LinearLayoutManager(this)
         results.adapter = ResultAdapter(intent.getStringArrayExtra("results"))
+        if (Build.VERSION.SDK_INT >= 21) {
+            window.setFlags(
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+        }
+        val header = findViewById<ConstraintLayout>(R.id.header)
+        header.setPadding(header.paddingLeft, (40 * resources.displayMetrics.density).toInt(), header.paddingRight, header.paddingBottom)
     }
 
     fun back(view: View){
