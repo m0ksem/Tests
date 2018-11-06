@@ -203,7 +203,7 @@ class ResultWithScoreAdapter(override val results: ArrayList<Test.Result>) : Res
             min.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(p0: Editable?) {
                     val res: ScoreTest.Result = results[position] as ScoreTest.Result
-                    if (p0.toString().toIntOrNull() != null) {
+                    if (p0.toString().toFloatOrNull() != null) {
                         (res).min = p0.toString().toFloat()
                     }
                     else {
@@ -220,7 +220,7 @@ class ResultWithScoreAdapter(override val results: ArrayList<Test.Result>) : Res
             max.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(p0: Editable?) {
                     val res: ScoreTest.Result = results[position] as ScoreTest.Result
-                    if (p0.toString().toIntOrNull() != null) {
+                    if (p0.toString().toFloatOrNull() != null) {
                         (res).max = p0.toString().toFloat()
                     }
                     else {
@@ -266,7 +266,7 @@ class ResultWithConnectionAdapter(override val results: ArrayList<Test.Result>) 
             min.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(p0: Editable?) {
                     val res: NeuroTest.Result = results[position] as NeuroTest.Result
-                    if (p0.toString().toIntOrNull() != null) {
+                    if (p0.toString().toFloatOrNull() != null) {
                         (res).min = p0.toString().toFloat()
                     }
                     else {
@@ -283,7 +283,7 @@ class ResultWithConnectionAdapter(override val results: ArrayList<Test.Result>) 
             max.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(p0: Editable?) {
                     val res: NeuroTest.Result = results[position] as NeuroTest.Result
-                    if (p0.toString().toIntOrNull() != null) {
+                    if (p0.toString().toFloatOrNull() != null) {
                         (res).max = p0.toString().toFloat()
                     }
                     else {

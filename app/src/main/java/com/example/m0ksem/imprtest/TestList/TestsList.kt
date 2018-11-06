@@ -65,12 +65,9 @@ class TestsList() : AppCompatActivity(), Parcelable {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.navigationBarColor = resources.getColor(R.color.colorBackground)
             window.statusBarColor = resources.getColor(R.color.colorBackground)
-
         }
         val button = this.findViewById<ConstraintLayout>(R.id.nav_bar)!!
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.open_activity_button_up))
-
-//        dbHelper.insert(WhoYouFromJojo)
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -201,7 +198,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
 
                 id.moveToFirst()
 
-                Toast.makeText(context,"test id ${id.getInt(0).toString()}",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,"test id ${id.getInt(0)}",Toast.LENGTH_SHORT).show()
                 cv.put("test", id.getInt(0).toString())
                 db = this.writableDatabase
                 db.insert("Questions",null, cv)
