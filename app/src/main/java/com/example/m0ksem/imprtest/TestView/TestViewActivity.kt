@@ -71,8 +71,7 @@ class TestViewActivity : AppCompatActivity() {
             val intent = Intent(this, OneStringResult::class.java)
             intent.putExtra("result", result)
             startActivityForResult(intent, 1)
-        }
-        if (test.type == "answers_with_string") {
+        } else if (test.type == "answers_with_string") {
             val answers: ArrayList<String> = ArrayList()
             for (i: Int in 0 until adapter.itemCount) {
                 val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
@@ -84,6 +83,19 @@ class TestViewActivity : AppCompatActivity() {
             }
             val array = arrayOfNulls<String>(answers.size)
             answers.toArray(array)
+            val intent = Intent(this, ManyStringResult::class.java)
+            intent.putExtra("results", array)
+            startActivityForResult(intent, 1)
+        } else if (test.type == "answers_with_connection") {
+            getUserAnswersNeuro()
+
+            val results: ArrayList<String> = ArrayList()
+            for (r in test.results) {
+                val result: NeuroTest.Result = r as NeuroTest.Result
+                if (result.min <= result.score && result.max > result.score) results.add(result.text)
+            }
+            val array = arrayOfNulls<String>(results.size)
+            results.toArray(array)
             val intent = Intent(this, ManyStringResult::class.java)
             intent.putExtra("results", array)
             startActivityForResult(intent, 1)
@@ -104,6 +116,23 @@ class TestViewActivity : AppCompatActivity() {
         }
         return scores
     }
+
+    private fun getUserAnswersNeuro() : ArrayList<Float>? {
+        val scores: ArrayList<Float> = ArrayList()
+        for (i: Int in 0 until adapter.itemCount) {
+            val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
+            val a: AdapterAnswers.ViewAnswerAdapter = q.answers.adapter as AdapterAnswers.ViewAnswerAdapter
+            if (a.selectedAnswer == -1) {
+                return null
+            }
+            val answer = test.questions[i].answers[a.selectedAnswer] as NeuroTest.Question.Answer
+            for (connection in answer.connections) {
+                (connection.result as NeuroTest.Result).score += connection.weight
+            }
+        }
+        return scores
+    }
+
 
     private fun checkTestPassed() {
         if (!buttonShowed) {

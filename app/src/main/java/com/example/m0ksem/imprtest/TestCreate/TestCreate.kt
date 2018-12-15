@@ -21,6 +21,7 @@ import com.example.m0ksem.imprtest.TestCreate.SetResults.SetResults
 import java.io.Serializable
 import android.support.v7.app.AlertDialog
 import android.view.WindowManager
+import kotlinx.android.synthetic.main.list_test.*
 import kotlin.math.log
 
 
@@ -33,6 +34,7 @@ class TestCreate : AppCompatActivity() {
     private lateinit var tips: Array<String>
     private var questions: ArrayList<Test.Question>? = null
     private var results: ArrayList<Test.Result>? = null
+    public lateinit var userName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,17 @@ class TestCreate : AppCompatActivity() {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.navigationBarColor = resources.getColor(R.color.colorGradientBackgroundBottom)
+        }
+        val test: Test? = intent.getSerializableExtra("test") as Test?
+        if (test != null) {
+            (findViewById<View>(R.id.create_test_name) as EditText).setText(test.name)
+            type = test.type
+            tags = test.tags
+            questions = test.questions
+            results = test.results
+            userName = test.author
+        } else {
+            userName = intent.getStringExtra("username")
         }
     }
 
@@ -164,7 +177,7 @@ class TestCreate : AppCompatActivity() {
         overridePendingTransition(R.anim.open_addition_setting_enter, R.anim.open_addition_setting_exit)
     }
 
-    fun updateResultsId() {
+    private fun updateResultsId() {
         results!!.forEachIndexed {index, el ->
             el.id = index
         }
@@ -246,11 +259,10 @@ class TestCreate : AppCompatActivity() {
         }
         else {
 
-            val userName: String = intent.getStringExtra("username")
             val test = when (type) {
                 "answers_with_score" -> ScoreTest(testName, userName)
                 "answers_with_string" -> StringTest(testName, userName)
-                "answers_with_connection" -> StringTest(testName, userName)
+                "answers_with_connection" -> NeuroTest(testName, userName)
                 else -> null
             }
             when (test) {
@@ -274,6 +286,7 @@ class TestCreate : AppCompatActivity() {
                 }
             }
             intent.putExtra("test", test as Serializable)
+            intent.putExtra("position", intent.getIntExtra("position", -1))
             setResult(RESULT_OK, intent)
             finish()
         }

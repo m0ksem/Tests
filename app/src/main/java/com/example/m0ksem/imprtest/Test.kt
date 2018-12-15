@@ -63,12 +63,12 @@ class NeuroTest(name: String, author: String) : Test(name, author) {
 
     class Result(result: String, var score: Float, var min: Float, var max: Float) : Test.Result(result)
 
-    fun getResults(): String {
-        val return_results: ArrayList<Test.Result> = ArrayList()
-        for (r in results) {
-            val result: NeuroTest.Result = r as Result
-            if (result.min <= result.score && result.max > result.score) return_results.add(result)
-        }
-        return "Пользователь $author не добавил ничего для ваших результатов :("
-    }
+//    fun getResult(): ArrayList<String> {
+//        val return_results: ArrayList<Test.Result> = ArrayList()
+//        for (r in results) {
+//            val result: NeuroTest.Result = r as Result
+//            if (result.min <= result.score && result.max > result.score) return_results.add(result)
+//        }
+//        return_results
+//    }
 }

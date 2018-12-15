@@ -11,6 +11,7 @@
     <string name="add_button">+</string>
     <string name="delete_button">✖</string>
     <string name="exit_button">✖</string>
+    <string name="ok">Ок</string>
     <string name="yes">Да</string>
     <string name="cancel">Отмена</string>
 
@@ -31,6 +32,14 @@
     <string name="error_enter_password">Введите пароль</string>
     <string name="error_invalid_password">Неверный пароль</string>
 
+    <string name="register_warning_header">Продолжить регистрацию?</string>
+    <string name="register_warning_message">Вы будете зарегестрированы по данным что вы ввели</string>
+
+    <string name="server_not_available_header">Сервер недоступен</string>
+    <string name="server_not_available_message">Вы можете продолжить пользоваться приложением как гость в оффлайне</string>
+
+    <string name="guest">Гость</string>
+
     <string name="accept">Да</string>
     <string name="decline">Нет</string>
 
@@ -39,6 +48,16 @@
     <string name="hello_user_morning">Доброе утро</string>
     <string name="hello_user_afternoon">Добрый день</string>
     <string name="hello_user_evening">Добрый вечер</string>
+
+    <!-- Test Editing-->
+
+    <string name="edit_test_edit">Изменить</string>
+    <string name="edit_test_remove">Удалить</string>
+    <string name="edit_test_make_sure_delete_title">Вы действительно хотите удалить тест?</string>
+    <string name="edit_test_make_sure_delete_message">Если вы удалите тест, вы не сможете его востановить</string>
+
+    <string name="edit_test_fail_header">Вы не автор этого теста</string>
+    <string name="edit_test_fail_message">Только создатель этого теста может его редактировать или удалить</string>
 
     <!--CreateTest-->
     <string name="create_test_header">Создайте свой тест</string>
@@ -93,5 +112,6 @@
 
     <string name="your_result">Ваш результат</string>
     <string name="find_new_tests">Просмотреть ещё тесты</string>
+
 
 </resources>

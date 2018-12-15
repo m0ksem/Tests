@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.m0ksem.imprtest">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,9 +14,9 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".Login"
-            android:windowSoftInputMode="adjustResize"
-            android:fitsSystemWindows="true"/>
+            android:name=".Login.Login"
+            android:fitsSystemWindows="true"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".TestList.TestsList"
             android:windowSoftInputMode="adjustResize">
@@ -40,8 +42,9 @@
         <activity
             android:name=".TestCreate.SetResults.SetResults"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".Results.OneStringResult"></activity>
+        <activity android:name=".Results.OneStringResult" />
         <activity android:name=".Results.ManyStringResult" />
+        <activity android:name=".Login.Register"></activity>
     </application>
 
 </manifest>

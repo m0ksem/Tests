@@ -26,18 +26,29 @@ import kotlin.collections.ArrayList
 import android.content.ContentValues
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.example.m0ksem.imprtest.*
+import com.example.m0ksem.imprtest.Login.Login
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 @Suppress("DEPRECATION")
 class TestsList() : AppCompatActivity(), Parcelable {
-    private var username: String? = null
+    var username: String? = null
 
     private lateinit var accountPreferences: SharedPreferences
 
     private lateinit var adapter: TestAdapter
 
     private lateinit var dbHelper: DBHelper
+
+    private val serverDataBase: ServerDataBase = ServerDataBase()
 
     constructor(parcel: Parcel) : this() {
         username = parcel.readString()
@@ -57,7 +68,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
         val list:RecyclerView = this.findViewById(R.id.tests_list)
         list.layoutManager = LinearLayoutManager(this)
         dbHelper = DBHelper(this, "tests")
-        adapter = TestAdapter(dbHelper.readData())
+        adapter = TestAdapter(dbHelper.readData(), this)
         list.adapter = adapter
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -72,7 +83,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
 
     @SuppressLint("CommitPrefEdits")
     fun logout(view: View) {
-        accountPreferences.edit().putString("login", null)
+        accountPreferences.edit().remove("login").apply()
         accountPreferences.edit().apply()
         val intent = Intent(this, Login::class.java)
         startActivity(intent)
@@ -123,9 +134,143 @@ class TestsList() : AppCompatActivity(), Parcelable {
         }
         if (requestCode == 1) {
             val test: Test = data.getSerializableExtra("test") as Test
-            dbHelper.insert(test)
+//            dbHelper.insert(test)
+            serverDataBase.addTest(test)
             adapter.add(test)
-            Toast.makeText(this, "Хорошоая работа, ты сделал свой первый тест!", Toast.LENGTH_LONG).show()
+        }
+        if (requestCode == 2) {
+            val test: Test = data.getSerializableExtra("test") as Test
+            // todo replace in db
+            val pos = data.getIntExtra("position", -1)
+            adapter.edit(test, pos)
+        }
+    }
+
+    inner class ServerDataBase {
+        private val addTestURL = "http://192.168.0.100:3000/database/tests/add"
+
+        fun addTest(test: Test) {
+            val queue = Volley.newRequestQueue(this@TestsList)
+
+
+
+            val request = JsonObjectRequest(Request.Method.POST, addTestURL, neuroTestToJSON(test as NeuroTest), Response.Listener<JSONObject> {
+
+            }, Response.ErrorListener {
+
+            })
+
+            request.retryPolicy = DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+            queue.add(request)
+        }
+
+        private fun scoreTestToJSON(test: ScoreTest): JSONObject {
+            val jsonObject = JSONObject()
+            jsonObject.put("name", test.name)
+            jsonObject.put("author", test.author)
+            jsonObject.put("type", test.type)
+            val questionsArray = JSONArray()
+            for (q in (test.questions)) {
+                val question = JSONObject()
+                question.put("text", q.text)
+                val answersArray = JSONArray()
+                for (a in q.answers as ArrayList<ScoreTest.Question.Answer>) {
+                    val answer = JSONObject()
+                    answer.put("text", a.text)
+                    answer.put("score", a.score)
+                    answersArray.put(answer)
+                }
+                question.put("answers", answersArray)
+                questionsArray.put(question)
+            }
+            jsonObject.put("questions",questionsArray)
+            val tagsArray = JSONArray()
+            for (t in test.tags) {
+                tagsArray.put(t)
+            }
+            jsonObject.put("tags", tagsArray)
+            val resultArray = JSONArray()
+            for (r in test.results as ArrayList<ScoreTest.Result>) {
+                val result = JSONObject()
+                result.put("text", r.text)
+                result.put("max", r.max)
+                result.put("min", r.min)
+                resultArray.put(result)
+            }
+            jsonObject.put("results", resultArray)
+            return jsonObject
+        }
+
+        private fun stringTestToJSON(test: StringTest): JSONObject {
+            val jsonObject = JSONObject()
+            jsonObject.put("name", test.name)
+            jsonObject.put("author", test.author)
+            jsonObject.put("type", test.type)
+            val questionsArray = JSONArray()
+            for (q in (test.questions)) {
+                val question = JSONObject()
+                question.put("text", q.text)
+                val answersArray = JSONArray()
+                for (a in q.answers as ArrayList<StringTest.Question.Answer>) {
+                    val answer = JSONObject()
+                    answer.put("text", a.text)
+                    answer.put("explanation", a.explanation)
+                    answersArray.put(answer)
+                }
+                question.put("answers", answersArray)
+                questionsArray.put(question)
+            }
+            jsonObject.put("questions",questionsArray)
+            val tagsArray = JSONArray()
+            for (t in test.tags) {
+                tagsArray.put(t)
+            }
+            jsonObject.put("tags", tagsArray)
+            jsonObject.put("results", null)
+            return jsonObject
+        }
+
+        private fun neuroTestToJSON(test: NeuroTest): JSONObject {
+            val jsonObject = JSONObject()
+            jsonObject.put("name", test.name)
+            jsonObject.put("author", test.author)
+            jsonObject.put("type", test.type)
+            val questionsArray = JSONArray()
+            for (q in (test.questions)) {
+                val question = JSONObject()
+                question.put("text", q.text)
+                val answersArray = JSONArray()
+                for (a in q.answers as ArrayList<NeuroTest.Question.Answer>) {
+                    val answer = JSONObject()
+                    answer.put("text", a.text)
+//                    answer.put("explanation", a.)
+                    val connection = JSONObject()
+                    for (c in a.connections) {
+                        connection.put("weight", c.weight)
+                        Log.d("Result position", test.results.indexOf(c.result).toString())
+                        connection.put("resultPosition", test.results.indexOf(c.result))
+                    }
+                    answersArray.put(answer)
+                }
+                question.put("answers", answersArray)
+                questionsArray.put(question)
+            }
+            jsonObject.put("questions",questionsArray)
+            val tagsArray = JSONArray()
+            for (t in test.tags) {
+                tagsArray.put(t)
+            }
+            jsonObject.put("tags", tagsArray)
+            val resultArray = JSONArray()
+            for (r in test.results as ArrayList<NeuroTest.Result>) {
+                val result = JSONObject()
+                result.put("text", r.text)
+                result.put("max", r.max)
+                result.put("min", r.min)
+                resultArray.put(result)
+            }
+            jsonObject.put("results", resultArray)
+            return jsonObject
         }
     }
 
@@ -289,6 +434,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
                             } while (resultsSQL.moveToNext())
                         }
                     }
+                    test.tags = ArrayList()
                     list.add(test)
                 }
                 while (result.moveToNext())
