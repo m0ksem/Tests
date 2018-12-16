@@ -88,11 +88,11 @@ class TestViewActivity : AppCompatActivity() {
             startActivityForResult(intent, 1)
         } else if (test.type == "answers_with_connection") {
             getUserAnswersNeuro()
-
             val results: ArrayList<String> = ArrayList()
             for (r in test.results) {
                 val result: NeuroTest.Result = r as NeuroTest.Result
                 if (result.min <= result.score && result.max > result.score) results.add(result.text)
+                result.score = 0f
             }
             val array = arrayOfNulls<String>(results.size)
             results.toArray(array)
@@ -100,7 +100,6 @@ class TestViewActivity : AppCompatActivity() {
             intent.putExtra("results", array)
             startActivityForResult(intent, 1)
         }
-
     }
 
     private fun getUserAnswersScores() : ArrayList<Float>? {
@@ -127,7 +126,7 @@ class TestViewActivity : AppCompatActivity() {
             }
             val answer = test.questions[i].answers[a.selectedAnswer] as NeuroTest.Question.Answer
             for (connection in answer.connections) {
-                (connection.result as NeuroTest.Result).score += connection.weight
+                (test.results[connection.resultPosition] as NeuroTest.Result).score += connection.weight
             }
         }
         return scores

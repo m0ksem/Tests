@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
 import android.widget.EditText
@@ -34,7 +35,7 @@ class TestCreate : AppCompatActivity() {
     private lateinit var tips: Array<String>
     private var questions: ArrayList<Test.Question>? = null
     private var results: ArrayList<Test.Result>? = null
-    public lateinit var userName: String
+    lateinit var userName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +47,7 @@ class TestCreate : AppCompatActivity() {
             val window = window
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.navigationBarColor = resources.getColor(R.color.colorGradientBackgroundBottom)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.colorGradientBackgroundBottom)
         }
         val test: Test? = intent.getSerializableExtra("test") as Test?
         if (test != null) {
@@ -123,38 +124,14 @@ class TestCreate : AppCompatActivity() {
             val intent = Intent(this, SetQuestions::class.java)
             intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
             if (type == "answers_with_connection" && results != null && questions != null) {
-                val defaultConnections: ArrayList<NeuroTest.Connection> = ArrayList()
-                for (i in 0 until results!!.size) {
-                    defaultConnections.add(NeuroTest.Connection(results!![i], 0f))
-                }
-                // TODO() Тут как бы результаты совсем другие обьекты
-                intent.putExtra("default_connections", defaultConnections as Serializable)
-                val resultsSize = results!!.size
-                for (question in questions!!) {
-                    for (answer in question.answers) {
-                        if (resultsSize > 0) {
-                            val connectionsLastIndex: Int = (answer as NeuroTest.Question.Answer).connections.size - 1
-                            val connections = answer.connections
-                            var connectionIndex = 0
-                            var resultIndex = 0
-                            while (resultIndex < resultsSize) {
-                                if (results!![resultIndex].id > connectionsLastIndex || resultIndex >= answer.connections.size) {
-                                    answer.connections.add(NeuroTest.Connection(results!![resultIndex], 0f))
-                                } else if (results!![resultIndex].id == connections[connectionIndex].result.id) {
-                                    connections[connectionIndex].result = results!![resultIndex]
-                                } else {
-                                    answer.connections.removeAt(connectionIndex)
-                                    connectionIndex--
-                                    resultIndex--
-                                }
-                                resultIndex++
-                                connectionIndex++
-                            }
-                        } else {
-                            (answer as NeuroTest.Question.Answer).connections.clear()
-                        }
-                    }
-                }
+//                val defaultConnections: ArrayList<NeuroTest.Connection> = ArrayList()
+//                for (i in 0 until results!!.size) {
+//                    defaultConnections.add(NeuroTest.Connection(results!![i], 0f))
+//                }
+//                // TODO() Тут как бы результаты совсем другие обьекты
+//                intent.putExtra("default_connections", defaultConnections as Serializable)
+//                val resultsSize = results!!.size
+                intent.putExtra("results", results as Serializable)
             }
             intent.putExtra("questions", questions as Serializable)
             intent.putExtra("type", type)
@@ -219,17 +196,15 @@ class TestCreate : AppCompatActivity() {
         }
         if (requestCode == 1){
             type = data.getStringExtra("type")
+            findViewById<TextView>(R.id.select_type).text = resources.getString(R.string.create_test_selected_type)
             when (type) {
                 "answers_with_score" -> {
-                    findViewById<TextView>(R.id.select_type).text = resources.getString(R.string.create_test_selected_type)
                     findViewById<TextView>(R.id.selected_test_type).text = resources.getString(R.string.create_test_type_score).toLowerCase()
                 }
                 "answers_with_string" -> {
-                    findViewById<TextView>(R.id.select_type).text = resources.getString(R.string.create_test_selected_type)
                     findViewById<TextView>(R.id.selected_test_type).text = resources.getString(R.string.create_test_type_string).toLowerCase()
                 }
                 "answers_with_connection" -> {
-                    findViewById<TextView>(R.id.select_type).text = resources.getString(R.string.create_test_selected_type)
                     findViewById<TextView>(R.id.selected_test_type).text = resources.getString(R.string.create_test_type_neuro).toLowerCase()
                 }
             }
@@ -245,9 +220,30 @@ class TestCreate : AppCompatActivity() {
         }
         if (requestCode == 4) {
             results = data.getStringArrayListExtra("results") as ArrayList<Test.Result>
-            Log.d("Result imported", results.toString())
-            if (results!!.size > 0) Log.d("RESULT1", results!![0].toString())
+            updateResultsInAnswers(data.getStringArrayListExtra("deleted") as ArrayList<Int>)
             tipsView.text = tips[4]
+        }
+    }
+
+    private fun updateResultsInAnswers(deletedAnswers: ArrayList<Int>) {
+        if (questions != null) {
+            for (question in questions!!) {
+                for (answer in question.answers as ArrayList<NeuroTest.Question.Answer>) {
+                    for (k in deletedAnswers) {
+                        answer.connections.removeAt(k)
+                    }
+                }
+            }
+            for (i in 0 until results!!.size) {
+                for (question in questions!!) {
+                    for (answer in question.answers as ArrayList<NeuroTest.Question.Answer>) {
+                        for (j in answer.connections.size until results!!.size) {
+                            answer.connections.add(NeuroTest.Connection(0, 0f))
+                        }
+                        answer.connections[i].resultPosition = i
+                    }
+                }
+            }
         }
     }
 

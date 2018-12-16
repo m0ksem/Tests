@@ -55,11 +55,7 @@ class NeuroTest(name: String, author: String) : Test(name, author) {
         class Answer(text: String, val connections: ArrayList<Connection> = ArrayList()) : Test.Question.Answer(text)
     }
 
-    class Connection(var result: Test.Result, var weight: Float) : Serializable {
-        fun copy(): Connection {
-            return Connection(result, weight)
-        }
-    }
+    class Connection(var resultPosition: Int, var weight: Float) : Serializable
 
     class Result(result: String, var score: Float, var min: Float, var max: Float) : Test.Result(result)
 

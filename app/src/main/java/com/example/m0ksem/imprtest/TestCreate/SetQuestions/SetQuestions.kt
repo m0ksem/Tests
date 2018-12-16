@@ -6,12 +6,12 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
@@ -25,6 +25,7 @@ class SetQuestions : AppCompatActivity()  {
     private lateinit var adapter: QuestionsAdapter
     private lateinit var list: RecyclerView
     lateinit var type: String
+    var results: ArrayList<NeuroTest.Result> = ArrayList()
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +33,10 @@ class SetQuestions : AppCompatActivity()  {
         setContentView(R.layout.activity_set_questions)
         val questions: ArrayList<Test.Question> = intent.getSerializableExtra("questions") as ArrayList<Test.Question>
         type = intent.getStringExtra("type")
+
+        if (type == "answers_with_connection") {
+            results = intent.getSerializableExtra("results") as ArrayList<NeuroTest.Result>? ?: ArrayList()
+        }
         list = this.findViewById(R.id.create_test_questions_list)
         list.layoutManager = LinearLayoutManager(this)
         adapter = QuestionsAdapter(questions)
@@ -54,7 +59,7 @@ class SetQuestions : AppCompatActivity()  {
             val window = window
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.navigationBarColor = resources.getColor(R.color.colorGradientBackgroundBottom)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.colorGradientBackgroundBottom)
         }
     }
 
@@ -62,7 +67,6 @@ class SetQuestions : AppCompatActivity()  {
     inner class SlideAnimation(private var mView: View, private var mFromHeight: Int, private var mToHeight: Int) : Animation() {
         override fun applyTransformation(interpolatedTime: Float, transformation: Transformation) {
             val newHeight: Int
-
             if (mView.height + 1 != mToHeight) {
                 newHeight = (mFromHeight + (mToHeight - mFromHeight) * interpolatedTime).toInt()
                 mView.layoutParams.height = newHeight
@@ -71,7 +75,6 @@ class SetQuestions : AppCompatActivity()  {
                 mView.layoutParams.height = mView.height - 1
             }
         }
-
         override fun willChangeBounds(): Boolean {
             return true
         }
@@ -160,15 +163,11 @@ class SetQuestions : AppCompatActivity()  {
             } else if (type == "answers_with_string") {
                 questions[position].answers.add(StringTest.Question.Answer(answer, ""))
             } else if (type == "answers_with_connection") {
-                if (intent.getSerializableExtra("default_connections") != null) {
-                    val defaultConnections: ArrayList<NeuroTest.Connection> = intent.getSerializableExtra("default_connections") as ArrayList<NeuroTest.Connection>
-                    val newConnections: ArrayList<NeuroTest.Connection> = ArrayList()
-                    for (el: NeuroTest.Connection in defaultConnections) {
-                        newConnections.add(el.copy())
-                    }
-                    questions[position].answers.add(NeuroTest.Question.Answer(answer, newConnections))
-                } else  questions[position].answers.add(NeuroTest.Question.Answer(answer, ArrayList()))
-
+                val connections = ArrayList<NeuroTest.Connection>()
+                for (i in 0 until results.size) {
+                    connections.add(NeuroTest.Connection(i, 0f))
+                }
+                questions[position].answers.add(NeuroTest.Question.Answer(answer, connections))
             }
             notifyDataSetChanged()
         }
@@ -344,7 +343,8 @@ class SetQuestions : AppCompatActivity()  {
 
 
                 override fun onBindViewHolder(view: ViewHolder, position: Int) {
-                    view.resultText.text = connections[position].result.text
+
+                    view.resultText.text = results[connections[position].resultPosition].text
                     view.answerWeight.text = connections[position].weight.toString()
                     view.answerWeight.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(p0: Editable?) {
@@ -353,7 +353,7 @@ class SetQuestions : AppCompatActivity()  {
                             when {
                                 inputText == "" -> return
                                 intInput == null -> {
-                                    Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
+//                                    Toast.makeText(view.context,"Value must be a number!", Toast.LENGTH_SHORT).show()
                                     return
                                 }
                                 else -> connections[view.adapterPosition].weight = intInput

@@ -29,6 +29,7 @@ class SetResults : AppCompatActivity() {
     private lateinit var adapter: ResultAdapter
     lateinit var resultList: RecyclerView
     var type: String = ""
+    lateinit var deletedResults: ArrayList<Int>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +47,7 @@ class SetResults : AppCompatActivity() {
             }
             adapter = ResultWithScoreAdapter(results as ArrayList<Test.Result>)
         } else if (type == "answers_with_connection") {
+            deletedResults = ArrayList()
             val results: ArrayList<NeuroTest.Result> = if ( intent.getSerializableExtra("results") != null) {
                 intent.getSerializableExtra("results") as ArrayList<NeuroTest.Result>
             } else {
@@ -124,10 +126,14 @@ class SetResults : AppCompatActivity() {
         val item: ConstraintLayout = view.parent.parent as ConstraintLayout
         val pos: Int = resultList.getChildAdapterPosition(item)
         adapter.delete(pos)
+        deletedResults.add(pos)
     }
 
     fun save() {
         intent.putExtra("results", adapter.results)
+        if (type == "answers_with_connection") {
+            intent.putExtra("deleted", deletedResults)
+        }
         setResult(RESULT_OK, intent)
         finish()
     }
