@@ -27,8 +27,6 @@ import java.net.URL
 
 class Login : AppCompatActivity() {
 
-//    lateinit var iLoginService: LoginService
-//    internal var compositeDisposable = CompositeDisposable()
     val loginURL = "http://192.168.0.100:3000/login"
     val registerULR = "http://192.168.0.100:3000/register"
 
@@ -81,7 +79,8 @@ class Login : AppCompatActivity() {
         message.setMessage(resources.getString(R.string.server_not_available_message))
         message.setPositiveButton(resources.getString(R.string.ok)) { _, _ ->
             val prefs: SharedPreferences.Editor = getSharedPreferences("account", Context.MODE_PRIVATE).edit()
-            prefs.putString("login",resources.getString(R.string.guest))
+            prefs.putString("login", login_input.text.toString())
+            prefs.putBoolean("offline", true)
             prefs.apply()
             val intent = Intent(this, TestsList::class.java)
             startActivity(intent)
