@@ -30,6 +30,7 @@ import android.util.Log
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.m0ksem.imprtest.*
@@ -50,6 +51,8 @@ class TestsList() : AppCompatActivity(), Parcelable {
 
     private val serverDataBase: ServerDataBase = ServerDataBase()
 
+    private var offline: Boolean = false
+
     constructor(parcel: Parcel) : this() {
         username = parcel.readString()
     }
@@ -63,6 +66,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tests_list)
         accountPreferences = getSharedPreferences("account", Context.MODE_PRIVATE)
+        offline = accountPreferences.getBoolean("offline", false)
         checkLogin()
         helloUser()
         val list:RecyclerView = this.findViewById(R.id.tests_list)
@@ -79,6 +83,9 @@ class TestsList() : AppCompatActivity(), Parcelable {
         }
         val button = this.findViewById<ConstraintLayout>(R.id.nav_bar)!!
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.open_activity_button_up))
+
+        adapter = TestAdapter(ServerDataBase().getAllTests(), this)
+        list.adapter = adapter
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -134,8 +141,11 @@ class TestsList() : AppCompatActivity(), Parcelable {
         }
         if (requestCode == 1) {
             val test: Test = data.getSerializableExtra("test") as Test
+            // Local DB Adding
 //            dbHelper.insert(test)
-            serverDataBase.addTest(test)
+            if (!offline) {
+                serverDataBase.addTest(test)
+            }
             adapter.add(test)
         }
         if (requestCode == 2) {
@@ -148,13 +158,146 @@ class TestsList() : AppCompatActivity(), Parcelable {
 
     inner class ServerDataBase {
         private val addTestURL = "http://192.168.0.100:3000/database/tests/add"
+        private val getAllTestURL = "http://192.168.0.100:3000/database/tests/getAll"
+
+        fun getAllTests(): ArrayList<Test> {
+            val queue = Volley.newRequestQueue(this@TestsList)
+            val tests = ArrayList<Test>()
+            val request = JsonArrayRequest(Request.Method.GET, getAllTestURL, null, Response.Listener<JSONArray> { response ->
+                for (i in 0 until response.length()) {
+                    val test = parceJSONtoTest(response.getJSONObject(i))
+                    if (test != null) tests.add(test)
+
+                }
+            }, Response.ErrorListener {
+                Log.d("ErrorResponse", it.message.toString())
+            } )
+
+            request.retryPolicy = DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+
+            queue.add(request)
+            return tests
+        }
+
+        private fun parceJSONtoTest(json: JSONObject): Test? {
+            val testType = json.getString("type")
+            when (testType) {
+                "answers_with_score" -> {
+                    val test = ScoreTest(json.getString("name"), json.getString("author"))
+                    test.type = testType
+                    val jsonQuestions = json.getJSONArray("questions")
+                    val questions: ArrayList<Test.Question> = ArrayList()
+                    for (questionIndex in 0 until jsonQuestions.length()) {
+                        val jsonQuestion = jsonQuestions.getJSONObject(questionIndex)
+                        val question = ScoreTest.Question()
+                        question.text = jsonQuestion.getString("text")
+                        val jsonAnswers = jsonQuestion.getJSONArray("answers")
+                        for (answerIndex in 0 until jsonAnswers.length()) {
+                            val jsonAnswer = jsonAnswers.getJSONObject(answerIndex)
+                            val answer = ScoreTest.Question.Answer(jsonAnswer.getString("text"), jsonAnswer.getDouble("score").toFloat())
+                            question.answers.add(answer)
+                        }
+                        questions.add(question)
+                    }
+                    test.questions = questions
+
+                    val jsonResults = json.getJSONArray("results")
+                    val results: ArrayList<Test.Result> = ArrayList()
+                    for (resultIndex in 0 until jsonResults.length()) {
+                        val jsonResult = jsonResults.getJSONObject(resultIndex)
+                        val result = ScoreTest.Result(jsonResult.getString("text"), jsonResult.getDouble("min").toFloat(), jsonResult.getDouble("max").toFloat())
+                        results.add(result)
+                    }
+                    test.results = results
+
+                    val jsonTags = json.getJSONArray("tags")
+                    val tags: ArrayList<String> = ArrayList()
+                    for (resultIndex in 0 until jsonTags.length()) {
+                        val tag = jsonTags.getString(resultIndex)
+                        tags.add(tag)
+                    }
+                    test.tags = tags
+                    return test
+                }
+                "answers_with_string" -> {
+                    val test = StringTest(json.getString("name"), json.getString("author"))
+                    test.type = testType
+                    val jsonQuestions = json.getJSONArray("questions")
+                    val questions: ArrayList<Test.Question> = ArrayList()
+                    for (questionIndex in 0 until jsonQuestions.length()) {
+                        val jsonQuestion = jsonQuestions.getJSONObject(questionIndex)
+                        val question = StringTest.Question()
+                        question.text = jsonQuestion.getString("text")
+                        val jsonAnswers = jsonQuestion.getJSONArray("answers")
+                        for (answerIndex in 0 until jsonAnswers.length()) {
+                            val jsonAnswer = jsonAnswers.getJSONObject(answerIndex)
+                            val answer = StringTest.Question.Answer(jsonAnswer.getString("text"), jsonAnswer.getString("explanation"))
+                            question.answers.add(answer)
+                        }
+                        questions.add(question)
+                    }
+                    test.questions = questions
+
+                    val jsonTags = json.getJSONArray("tags")
+                    val tags: ArrayList<String> = ArrayList()
+                    for (resultIndex in 0 until jsonTags.length()) {
+                        val tag = jsonTags.getString(resultIndex)
+                        tags.add(tag)
+                    }
+                    test.tags = tags
+                    return test
+                }
+                "answers_with_connection" -> {
+                    val test = NeuroTest(json.getString("name"), json.getString("author"))
+                    test.type = testType
+
+                    val jsonResults = json.getJSONArray("results")
+                    val results: ArrayList<Test.Result> = ArrayList()
+                    for (resultIndex in 0 until jsonResults.length()) {
+                        val jsonResult = jsonResults.getJSONObject(resultIndex)
+                        val result = NeuroTest.Result(jsonResult.getString("text"), 0f, jsonResult.getDouble("min").toFloat(), jsonResult.getDouble("max").toFloat())
+                        results.add(result)
+                    }
+                    test.results = results
+
+                    val jsonQuestions = json.getJSONArray("questions")
+                    val questions: ArrayList<Test.Question> = ArrayList()
+                    for (questionIndex in 0 until jsonQuestions.length()) {
+                        val jsonQuestion = jsonQuestions.getJSONObject(questionIndex)
+                        val question = NeuroTest.Question()
+                        question.text = jsonQuestion.getString("text")
+                        val jsonAnswers = jsonQuestion.getJSONArray("answers")
+                        for (answerIndex in 0 until jsonAnswers.length()) {
+                            val jsonAnswer = jsonAnswers.getJSONObject(answerIndex)
+                            val jsonConnections = jsonAnswer.getJSONArray("connections")
+                            val connections = ArrayList<NeuroTest.Connection>()
+                            for (connectionIndex in 0 until jsonConnections.length()) {
+                                connections.add(NeuroTest.Connection(connectionIndex, jsonConnections.getDouble(connectionIndex).toFloat()))
+                            }
+                            val answer = NeuroTest.Question.Answer(jsonAnswer.getString("text"), connections)
+                            question.answers.add(answer)
+                        }
+                        questions.add(question)
+                    }
+                    test.questions = questions
+
+                    val jsonTags = json.getJSONArray("tags")
+                    val tags: ArrayList<String> = ArrayList()
+                    for (resultIndex in 0 until jsonTags.length()) {
+                        val tag = jsonTags.getString(resultIndex)
+                        tags.add(tag)
+                    }
+                    test.tags = tags
+                    return test
+                }
+            }
+            return null
+        }
 
         fun addTest(test: Test) {
             val queue = Volley.newRequestQueue(this@TestsList)
 
-
-
-            val request = JsonObjectRequest(Request.Method.POST, addTestURL, neuroTestToJSON(test as NeuroTest), Response.Listener<JSONObject> {
+            val request = JsonObjectRequest(Request.Method.POST, addTestURL, parseTestToJSON(test), Response.Listener<JSONObject> {
 
             }, Response.ErrorListener {
 
@@ -162,6 +305,21 @@ class TestsList() : AppCompatActivity(), Parcelable {
 
             request.retryPolicy = DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
             queue.add(request)
+        }
+
+        private fun parseTestToJSON(test: Test): JSONObject {
+            when {
+                test.type == "answers_with_score" -> {
+                    return scoreTestToJSON(test as ScoreTest)
+                }
+                test.type == "answers_with_string" -> {
+                    return stringTestToJSON(test as StringTest)
+                }
+                test.type == "answers_with_connection" -> {
+                    return neuroTestToJSON(test as NeuroTest)
+                }
+            }
+            return JSONObject()
         }
 
         private fun scoreTestToJSON(test: ScoreTest): JSONObject {
@@ -243,13 +401,18 @@ class TestsList() : AppCompatActivity(), Parcelable {
                 for (a in q.answers as ArrayList<NeuroTest.Question.Answer>) {
                     val answer = JSONObject()
                     answer.put("text", a.text)
-//                    answer.put("explanation", a.)
-                    val connection = JSONObject()
+                    val connections = JSONArray()
+//                    val connection = JSONObject()
+//                    for (c in a.connections) {
+//                        connection.put("weight", c.weight)
+//                        connection.put("resultPosition", c.resultPosition)
+//                        connections.put(connection)
+//                    }
+//                    answer.put("connections", connection)
                     for (c in a.connections) {
-                        connection.put("weight", c.weight)
-                        Log.d("Result position", test.results.indexOf(c.result).toString())
-                        connection.put("resultPosition", test.results.indexOf(c.result))
+                        connections.put(c.weight)
                     }
+                    answer.put("connections", connections)
                     answersArray.put(answer)
                 }
                 question.put("answers", answersArray)
