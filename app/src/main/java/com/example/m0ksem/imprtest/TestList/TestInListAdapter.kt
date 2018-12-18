@@ -45,7 +45,11 @@ class TestAdapter(private val tests: ArrayList<Test>, private val activity: Test
                 if (activity.username == tests[adapterPosition].author) {
                     val builder = AlertDialog.Builder(activity)
 
-                    val items: Array<String> = arrayOf(activity.resources.getString(R.string.edit_test_edit), activity.resources.getString(R.string.edit_test_remove))
+                    val items: Array<String> = if (tests[adapterPosition].offline) {
+                        arrayOf(activity.resources.getString(R.string.edit_test_edit), activity.resources.getString(R.string.edit_test_remove), activity.resources.getString(R.string.test_add_request))
+                    } else {
+                        arrayOf(activity.resources.getString(R.string.edit_test_edit), activity.resources.getString(R.string.edit_test_remove))
+                    }
 
                     builder.setItems(items) { _, which ->
                         when(which) {

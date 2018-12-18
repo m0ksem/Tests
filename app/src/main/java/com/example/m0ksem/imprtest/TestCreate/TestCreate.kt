@@ -124,13 +124,6 @@ class TestCreate : AppCompatActivity() {
             val intent = Intent(this, SetQuestions::class.java)
             intent.putExtra("header_height", this.findViewById<LinearLayout>(R.id.header)!!.height)
             if (type == "answers_with_connection" && results != null && questions != null) {
-//                val defaultConnections: ArrayList<NeuroTest.Connection> = ArrayList()
-//                for (i in 0 until results!!.size) {
-//                    defaultConnections.add(NeuroTest.Connection(results!![i], 0f))
-//                }
-//                // TODO() Тут как бы результаты совсем другие обьекты
-//                intent.putExtra("default_connections", defaultConnections as Serializable)
-//                val resultsSize = results!!.size
                 intent.putExtra("results", results as Serializable)
             }
             intent.putExtra("questions", questions as Serializable)
@@ -220,7 +213,9 @@ class TestCreate : AppCompatActivity() {
         }
         if (requestCode == 4) {
             results = data.getStringArrayListExtra("results") as ArrayList<Test.Result>
-            updateResultsInAnswers(data.getStringArrayListExtra("deleted") as ArrayList<Int>)
+            if (type == "answers_with_connection") {
+                updateResultsInAnswers(data.getStringArrayListExtra("deleted") as ArrayList<Int>)
+            }
             tipsView.text = tips[4]
         }
     }

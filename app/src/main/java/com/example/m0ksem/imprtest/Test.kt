@@ -6,11 +6,12 @@ import java.io.File
 import java.io.Serializable
 
 abstract class Test(val name: String = "Псих тест", val author: String = "m0ksem") : Serializable {
-    var id: Int = 0
+    var id: String = "offline"
     lateinit var type: String
     lateinit var questions: ArrayList<Question>
     lateinit var tags: ArrayList<String>
     open lateinit var results: ArrayList<Result>
+    var offline = false
 
     open class Question : Serializable {
         lateinit var text: String
@@ -59,12 +60,4 @@ class NeuroTest(name: String, author: String) : Test(name, author) {
 
     class Result(result: String, var score: Float, var min: Float, var max: Float) : Test.Result(result)
 
-//    fun getResult(): ArrayList<String> {
-//        val return_results: ArrayList<Test.Result> = ArrayList()
-//        for (r in results) {
-//            val result: NeuroTest.Result = r as Result
-//            if (result.min <= result.score && result.max > result.score) return_results.add(result)
-//        }
-//        return_results
-//    }
 }

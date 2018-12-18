@@ -2,6 +2,7 @@
 
 package com.example.m0ksem.imprtest.Login
 
+
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -21,14 +22,11 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.m0ksem.imprtest.R
 import com.example.m0ksem.imprtest.TestList.TestsList
-import kotlinx.android.synthetic.main.activity_tests_list.*
-import java.net.URL
+import com.example.m0ksem.imprtest.Server as server
 
 
 class Login : AppCompatActivity() {
 
-    val loginURL = "http://192.168.0.100:3000/login"
-    val registerULR = "http://192.168.0.100:3000/register"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,7 +108,7 @@ class Login : AppCompatActivity() {
 
         val queue = Volley.newRequestQueue(this)
 
-        val postRequest = object : StringRequest(Request.Method.POST, registerULR, Response.Listener<String>
+        val postRequest = object : StringRequest(Request.Method.POST, server.registerUrl, Response.Listener<String>
         {
             response ->
             Log.d("Response", response)
@@ -124,7 +122,7 @@ class Login : AppCompatActivity() {
             }
         },
                 Response.ErrorListener {
-                    Log.d("ErrorResponse", it.message)
+                    Log.d("ErrorResponse", it.message.toString())
                     serverNotAvailable()
                 }
         ) {
@@ -138,7 +136,7 @@ class Login : AppCompatActivity() {
             }
         }
 
-        postRequest.retryPolicy = DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+        postRequest.retryPolicy = DefaultRetryPolicy(3000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
 
         queue.add(postRequest)
     }
@@ -158,7 +156,7 @@ class Login : AppCompatActivity() {
 
         val response: String? = null
 
-        val postRequest = object : StringRequest(Request.Method.POST, loginURL, Response.Listener<String>
+        val postRequest = object : StringRequest(Request.Method.POST, server.loginUrl, Response.Listener<String>
         {
             response ->
             Log.d("Response", response)
@@ -183,7 +181,7 @@ class Login : AppCompatActivity() {
             }
         },
         Response.ErrorListener {
-            Log.d("ErrorResponse", it.message)
+            Log.d("ErrorResponse", it.message.toString())
             serverNotAvailable()
         }
         ) {
@@ -197,7 +195,7 @@ class Login : AppCompatActivity() {
             }
         }
 
-        postRequest.retryPolicy = DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+        postRequest.retryPolicy = DefaultRetryPolicy(3000, 0, 1f)
 
         queue.add(postRequest)
     }

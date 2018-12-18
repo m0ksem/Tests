@@ -37,6 +37,7 @@ import com.example.m0ksem.imprtest.*
 import com.example.m0ksem.imprtest.Login.Login
 import org.json.JSONArray
 import org.json.JSONObject
+import com.example.m0ksem.imprtest.Server as server
 
 
 @Suppress("DEPRECATION")
@@ -51,7 +52,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
 
     private val serverDataBase: ServerDataBase = ServerDataBase()
 
-    private var offline: Boolean = false
+    var offline: Boolean = false
 
     constructor(parcel: Parcel) : this() {
         username = parcel.readString()
@@ -60,6 +61,11 @@ class TestsList() : AppCompatActivity(), Parcelable {
     override fun onResume() {
         super.onResume()
         helloUser()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Toast.makeText(this, "Started activity", Toast.LENGTH_SHORT).show()
     }
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +78,11 @@ class TestsList() : AppCompatActivity(), Parcelable {
         val list:RecyclerView = this.findViewById(R.id.tests_list)
         list.layoutManager = LinearLayoutManager(this)
         dbHelper = DBHelper(this, "tests")
-        adapter = TestAdapter(dbHelper.readData(), this)
+        adapter = if (offline) {
+            TestAdapter(dbHelper.readData(), this)
+        } else {
+            TestAdapter(ServerDataBase().getAllTests(), this)
+        }
         list.adapter = adapter
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -83,9 +93,6 @@ class TestsList() : AppCompatActivity(), Parcelable {
         }
         val button = this.findViewById<ConstraintLayout>(R.id.nav_bar)!!
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.open_activity_button_up))
-
-        adapter = TestAdapter(ServerDataBase().getAllTests(), this)
-        list.adapter = adapter
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -141,39 +148,33 @@ class TestsList() : AppCompatActivity(), Parcelable {
         }
         if (requestCode == 1) {
             val test: Test = data.getSerializableExtra("test") as Test
-            // Local DB Adding
-//            dbHelper.insert(test)
-            if (!offline) {
-                serverDataBase.addTest(test)
-            }
+            serverDataBase.addTest(test)
+            test.offline = offline
             adapter.add(test)
         }
         if (requestCode == 2) {
             val test: Test = data.getSerializableExtra("test") as Test
-            // todo replace in db
+            serverDataBase.editTest(test)
             val pos = data.getIntExtra("position", -1)
             adapter.edit(test, pos)
         }
     }
 
     inner class ServerDataBase {
-        private val addTestURL = "http://192.168.0.100:3000/database/tests/add"
-        private val getAllTestURL = "http://192.168.0.100:3000/database/tests/getAll"
-
         fun getAllTests(): ArrayList<Test> {
             val queue = Volley.newRequestQueue(this@TestsList)
             val tests = ArrayList<Test>()
-            val request = JsonArrayRequest(Request.Method.GET, getAllTestURL, null, Response.Listener<JSONArray> { response ->
+            val request = JsonArrayRequest(Request.Method.GET, server.getAllTestURL, null, Response.Listener<JSONArray> { response ->
                 for (i in 0 until response.length()) {
                     val test = parceJSONtoTest(response.getJSONObject(i))
                     if (test != null) tests.add(test)
 
                 }
             }, Response.ErrorListener {
-                Log.d("ErrorResponse", it.message.toString())
+                offline = true
             } )
 
-            request.retryPolicy = DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+            request.retryPolicy = DefaultRetryPolicy(3000, 0, 1f)
 
             queue.add(request)
             return tests
@@ -185,6 +186,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
                 "answers_with_score" -> {
                     val test = ScoreTest(json.getString("name"), json.getString("author"))
                     test.type = testType
+                    test.id = json.getString("id")
                     val jsonQuestions = json.getJSONArray("questions")
                     val questions: ArrayList<Test.Question> = ArrayList()
                     for (questionIndex in 0 until jsonQuestions.length()) {
@@ -222,6 +224,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
                 "answers_with_string" -> {
                     val test = StringTest(json.getString("name"), json.getString("author"))
                     test.type = testType
+                    test.id = json.getString("id")
                     val jsonQuestions = json.getJSONArray("questions")
                     val questions: ArrayList<Test.Question> = ArrayList()
                     for (questionIndex in 0 until jsonQuestions.length()) {
@@ -250,7 +253,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
                 "answers_with_connection" -> {
                     val test = NeuroTest(json.getString("name"), json.getString("author"))
                     test.type = testType
-
+                    test.id = json.getString("id")
                     val jsonResults = json.getJSONArray("results")
                     val results: ArrayList<Test.Result> = ArrayList()
                     for (resultIndex in 0 until jsonResults.length()) {
@@ -297,15 +300,32 @@ class TestsList() : AppCompatActivity(), Parcelable {
         fun addTest(test: Test) {
             val queue = Volley.newRequestQueue(this@TestsList)
 
-            val request = JsonObjectRequest(Request.Method.POST, addTestURL, parseTestToJSON(test), Response.Listener<JSONObject> {
+            val request = JsonObjectRequest(Request.Method.POST, server.addTestURL, parseTestToJSON(test), Response.Listener<JSONObject> {
 
             }, Response.ErrorListener {
-
+                dbHelper.insert(test)
+                Toast.makeText(this@TestsList, resources.getString(R.string.test_add_error), Toast.LENGTH_SHORT).show()
+                test.offline = true
+                offline = true
             })
 
             request.retryPolicy = DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
             queue.add(request)
         }
+
+        fun editTest(test: Test) {
+            val queue = Volley.newRequestQueue(this@TestsList)
+
+            val request = JsonObjectRequest(Request.Method.POST, server.editTestURL, parseTestToJSON(test), Response.Listener<JSONObject> {
+
+            }, Response.ErrorListener {
+                Toast.makeText(this@TestsList, resources.getString(R.string.test_edit_error), Toast.LENGTH_SHORT).show()
+            })
+
+            request.retryPolicy = DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+            queue.add(request)
+        }
+
 
         private fun parseTestToJSON(test: Test): JSONObject {
             when {
@@ -402,13 +422,6 @@ class TestsList() : AppCompatActivity(), Parcelable {
                     val answer = JSONObject()
                     answer.put("text", a.text)
                     val connections = JSONArray()
-//                    val connection = JSONObject()
-//                    for (c in a.connections) {
-//                        connection.put("weight", c.weight)
-//                        connection.put("resultPosition", c.resultPosition)
-//                        connections.put(connection)
-//                    }
-//                    answer.put("connections", connection)
                     for (c in a.connections) {
                         connections.put(c.weight)
                     }
@@ -506,7 +519,7 @@ class TestsList() : AppCompatActivity(), Parcelable {
 
                 id.moveToFirst()
 
-                Toast.makeText(context,"test id ${id.getInt(0)}",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,"Test created locally with id ${id.getInt(0)}",Toast.LENGTH_SHORT).show()
                 cv.put("test", id.getInt(0).toString())
                 db = this.writableDatabase
                 db.insert("Questions",null, cv)

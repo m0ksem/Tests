@@ -113,5 +113,9 @@
     <string name="your_result">Ваш результат</string>
     <string name="find_new_tests">Просмотреть ещё тесты</string>
 
+    <string name="test_add_error">Сервер недоступен, ваш тест сохранен локально</string>
+    <string name="test_edit_error">Нет соединения с сервером, тест невозможно было изменить</string>
+    <string name="test_add_request">Загрузить тест на сервер</string>
+
 
 </resources>
