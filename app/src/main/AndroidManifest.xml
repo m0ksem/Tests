@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.m0ksem.imprtest">
+    package="com.m0ksem.tests">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,13 +12,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        android:fullBackupContent="true">
         <activity
-            android:name=".Login.Login"
+            android:name="com.m0ksem.tests.login.LoginActivity"
             android:fitsSystemWindows="true"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".TestList.TestsList"
+            android:name="com.m0ksem.tests.testList.TestsListActivity"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,25 +27,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TestView.TestViewActivity" />
+        <activity android:name="com.m0ksem.tests.testView.TestViewActivity" />
         <activity
-            android:name=".TestCreate.TestCreate"
+            android:name="com.m0ksem.tests.testCreate.TestCreateActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".TestCreate.ChooseType.ChooseType"
+            android:name="com.m0ksem.tests.testCreate.SetTypeActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".TestCreate.SetQuestions.SetQuestions"
+            android:name="com.m0ksem.tests.testCreate.SetQuestionsActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".TestCreate.ChooseTags.ChooseTags"
+            android:name="com.m0ksem.tests.testCreate.SetTagsActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".TestCreate.SetResults.SetResults"
+            android:name="com.m0ksem.tests.testCreate.SetResultsActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".Results.OneStringResult" />
-        <activity android:name=".Results.ManyStringResult" />
-        <activity android:name=".Login.Register"></activity>
+        <activity android:name="com.m0ksem.tests.results.OneStringResultActivity" />
+        <activity android:name="com.m0ksem.tests.results.ManyStringResultActivity" />
     </application>
 
 </manifest>

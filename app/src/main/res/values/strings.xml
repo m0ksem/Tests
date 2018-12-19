@@ -18,7 +18,7 @@
     <string name="test_question_count">Количество вопросов</string>
     <string name="test_category">Категория</string>
 
-    <!--Login-->
+    <!--LoginActivity-->
     <string name="hello">Здравствуй</string>
     <string name="hello_under">войди или зарегистрируйся</string>
     <string name="login">Логин</string>
@@ -77,7 +77,7 @@
     <string name="create_test_get_result">Получить результат</string>
 
     <string name="create_test_at_first_select_type">Сначала выберите тип теста</string>
-    <string name="create_test_you_no_need_results">Сначала выберите тип теста</string>
+    <string name="create_test_you_no_need_results">Вам не нужны результаты</string>
 
     <string name="create_test_choose_type">Выбери тип теста</string>
     <string name="create_test_selected_type">Выберанный тип теста </string>
@@ -85,7 +85,7 @@
     <string name="create_test_change_type_question">Изменить тип?</string>
     <string name="create_test_change_type_warning">Изменив тип вы потеряете созданные вопросы и результаты.</string>
     <string name="create_test_exit_creation_question">Вернуться назад?</string>
-    <string name="create_test_exit_creation_warning">Ваш тест не сохранён.</string>
+    <string name="create_test_exit_creation_warning">Ваш тест не сохранён</string>
 
     <string name="create_test_choose_tags">Выберите теги</string>
     <string name="create_test_set_question">Составьте список вопросов</string>
@@ -116,6 +116,8 @@
     <string name="test_add_error">Сервер недоступен, ваш тест сохранен локально</string>
     <string name="test_edit_error">Нет соединения с сервером, тест невозможно было изменить</string>
     <string name="test_add_request">Загрузить тест на сервер</string>
+    <string name="please_login">Вы должны войти в систему</string>
+    <string name="please_login_message">Для того чтобы загрузить тест на сервер, выйдите из локального аккаутна и войдите в систему.</string>
 
 
 </resources>

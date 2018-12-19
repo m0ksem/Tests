@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackgroundDarken"
-    tools:context=".TestList.TestsList"
+    tools:context=".testList.TestsListActivity"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
                     android:background="@android:color/transparent"
-                    android:onClick="logout"
+                    android:onClick="onLogoutClick"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:text="@string/logout"

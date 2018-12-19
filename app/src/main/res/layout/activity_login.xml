@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient"
     android:windowSoftInputMode="adjustResize"
-    tools:context=".Login.Login"
+    tools:context=".login.LoginActivity"
     tools:layout_editor_absoluteY="25dp">
 
     <android.support.constraint.ConstraintLayout

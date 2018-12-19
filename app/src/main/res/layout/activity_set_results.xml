@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient"
-    tools:context=".TestCreate.SetResults.SetResults"
+    tools:context=".testCreate.SetResultsActivity"
     android:fitsSystemWindows="true">
 
     <android.support.constraint.ConstraintLayout
@@ -119,7 +119,7 @@
             android:layout_marginEnd="8dp"
             android:background="@drawable/button_bg_stroke"
             android:ems="10"
-            android:hint="@string/create_test_enter_question_text"
+            android:hint="@string/create_test_enter_result_text"
             android:inputType="text"
             android:paddingLeft="15dp"
             android:paddingTop="10dp"
