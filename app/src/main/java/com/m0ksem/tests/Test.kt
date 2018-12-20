@@ -13,6 +13,11 @@ abstract class Test(val name: String = "Псих тест", val author: String =
     open class Question : Serializable {
         lateinit var text: String
         var answers: ArrayList<Answer> = ArrayList()
+        var selectedAnswer: Int = -1
+
+        fun getSelectedAnswer(): Answer {
+            return answers[selectedAnswer]
+        }
 
         open class Answer(var text: String) : Serializable
     }

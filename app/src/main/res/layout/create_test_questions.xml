@@ -79,14 +79,27 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/answes"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    </android.support.v7.widget.RecyclerView>
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:text="@string/create_test_answer_text" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/answes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/linearLayout4"

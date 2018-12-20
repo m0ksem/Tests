@@ -92,6 +92,7 @@
     <string name="create_test_test_results_for_questions">Выберите результаты для теста</string>
 
     <string name="create_test_question_text">Текст вопроса</string>
+    <string name="create_test_answer_text">Ответы</string>
     <string name="create_test_enter_name">Введите название теста</string>
     <string name="create_test_enter_tag_name">Введите название тега</string>
     <string name="create_test_enter_question_text">Введите текст вопроса</string>
@@ -118,6 +119,5 @@
     <string name="test_add_request">Загрузить тест на сервер</string>
     <string name="please_login">Вы должны войти в систему</string>
     <string name="please_login_message">Для того чтобы загрузить тест на сервер, выйдите из локального аккаутна и войдите в систему.</string>
-
 
 </resources>

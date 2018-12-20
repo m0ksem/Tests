@@ -95,4 +95,5 @@
     <string name="test_add_request">Upload test to server</string>
     <string name="please_login">You must log in</string>
     <string name="please_login_message">In order to upload the test to the server, log out of the local account and log in.</string>
+    <string name="create_test_answer_text">Answers</string>
 </resources>

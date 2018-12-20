@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,11 +76,7 @@ class TestViewActivity : AppCompatActivity() {
             test.type == "answers_with_string" -> {
                 val answers: ArrayList<String> = ArrayList()
                 for (i: Int in 0 until adapter.itemCount) {
-                    val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
-                    val a: AdapterAnswers.ViewAnswerAdapter = q.answers.adapter as AdapterAnswers.ViewAnswerAdapter
-                    if (a.selectedAnswer == -1) {
-                    }
-                    val ans = test.questions[i].answers[a.selectedAnswer] as StringTest.Question.Answer
+                    val ans = test.questions[i].getSelectedAnswer() as StringTest.Question.Answer
                     answers.add(ans.explanation)
                 }
                 val array = arrayOfNulls<String>(answers.size)
@@ -108,12 +105,7 @@ class TestViewActivity : AppCompatActivity() {
     private fun getUserAnswersScores() : ArrayList<Float>? {
         val scores: ArrayList<Float> = ArrayList()
         for (i: Int in 0 until adapter.itemCount) {
-            val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
-            val a: AdapterAnswers.ViewAnswerAdapter = q.answers.adapter as AdapterAnswers.ViewAnswerAdapter
-            if (a.selectedAnswer == -1) {
-                return null
-            }
-            val ans = test.questions[i].answers[a.selectedAnswer] as ScoreTest.Question.Answer
+            val ans = test.questions[i].getSelectedAnswer() as ScoreTest.Question.Answer
             scores.add(ans.score)
         }
         return scores
@@ -122,12 +114,7 @@ class TestViewActivity : AppCompatActivity() {
     private fun getUserAnswersNeuro() : ArrayList<Float>? {
         val scores: ArrayList<Float> = ArrayList()
         for (i: Int in 0 until adapter.itemCount) {
-            val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
-            val a: AdapterAnswers.ViewAnswerAdapter = q.answers.adapter as AdapterAnswers.ViewAnswerAdapter
-            if (a.selectedAnswer == -1) {
-                return null
-            }
-            val answer = test.questions[i].answers[a.selectedAnswer] as NeuroTest.Question.Answer
+            val answer = test.questions[i].getSelectedAnswer() as NeuroTest.Question.Answer
             for (connection in answer.connections) {
                 (test.results[connection.resultPosition] as NeuroTest.Result).score += connection.weight
             }
@@ -139,9 +126,7 @@ class TestViewActivity : AppCompatActivity() {
     private fun checkTestPassed() {
         if (!buttonShowed) {
             for (i: Int in 0 until adapter.itemCount) {
-                val q: AdapterAnswers.ViewHolder = list.findViewHolderForAdapterPosition(i)!! as AdapterAnswers.ViewHolder
-                val a: AdapterAnswers.ViewAnswerAdapter = q.answers.adapter as AdapterAnswers.ViewAnswerAdapter
-                if (a.selectedAnswer == -1) {
+                if ((list.adapter as AdapterAnswers).questions[i].selectedAnswer == -1) {
                     return
                 }
             }
@@ -152,7 +137,8 @@ class TestViewActivity : AppCompatActivity() {
         }
     }
 
-    inner class AdapterAnswers(private val questions: ArrayList<Test.Question>) : RecyclerView.Adapter<AdapterAnswers.ViewHolder>() {
+
+    inner class AdapterAnswers(val questions: ArrayList<Test.Question>) : RecyclerView.Adapter<AdapterAnswers.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
             return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_test_question, parent, false))
@@ -161,7 +147,7 @@ class TestViewActivity : AppCompatActivity() {
         override fun onBindViewHolder(view: ViewHolder, position: Int) {
             view.questionText.text = questions[position].text
             view.answers.layoutManager = LinearLayoutManager(view.ctx)
-            view.answers.adapter = ViewAnswerAdapter(questions[position].answers)
+            view.answers.adapter = ViewAnswerAdapter(questions[position])
         }
 
         override fun getItemCount(): Int {
@@ -174,23 +160,22 @@ class TestViewActivity : AppCompatActivity() {
             val ctx = view.context!!
         }
 
-        inner class ViewAnswerAdapter(private val answers: ArrayList<Test.Question.Answer>) : RecyclerView.Adapter<ViewAnswerAdapter.ViewHolder>() {
-            var selectedAnswer: Int = -1
+        inner class ViewAnswerAdapter(val question: Test.Question) : RecyclerView.Adapter<ViewAnswerAdapter.ViewHolder>() {
 
             override fun onCreateViewHolder(parent: ViewGroup, position: Int): ViewHolder {
                 return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_test_answer, parent, false))
             }
 
             override fun onBindViewHolder(view: ViewHolder, position: Int) {
-                view.answer.text = answers[position].text
+                view.answer.text = question.answers[position].text
                 view.answer.isChecked = false
-                if (selectedAnswer == position) {
+                if (question.selectedAnswer  == position) {
                     view.answer.isChecked = true
                 }
             }
 
             override fun getItemCount(): Int {
-                return answers.size
+                return question.answers.size
             }
 
             inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -198,9 +183,9 @@ class TestViewActivity : AppCompatActivity() {
 
                 init {
                     val clickListener = View.OnClickListener {
-                        selectedAnswer = adapterPosition
-                        checkTestPassed()
+                        question.selectedAnswer = adapterPosition
                         notifyDataSetChanged()
+                        checkTestPassed()
                     }
                     answer.setOnClickListener(clickListener)
                     view.setOnClickListener(clickListener)
