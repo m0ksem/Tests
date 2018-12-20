@@ -10,17 +10,19 @@ There are three test type:
  - StringTest - test type, where each answer contain string as result.
  - NeuroTest- test tpye, where each answer add different score to all test results and the result is shown if his points are in the specified range.
  
- You can login and publish your own test.
+ You can login and publish your own test to web-server.
 
 ## Requirements
 
-- Android 5.0 (Android API 28)
+- Android 4.4 (Android API 19)
 - Internet connections
 
 
 ## Installing
 
 Download lates app version from [releases](https://github.com/m0ksem/Tests/releases) and install it on your Android phone.
+This way you will use only offline mode.
+For using online mode you need a web-server you need a web-server api. Change Server.kt file to connect to your api. Then build app.
 
 ## Authors
 
