@@ -22,10 +22,15 @@ import com.android.volley.toolbox.Volley
 import com.m0ksem.tests.R
 import com.m0ksem.tests.testList.TestsListActivity
 import com.m0ksem.tests.Server as server
+import android.R.attr.prompt
+import android.view.LayoutInflater
+import android.content.DialogInterface
+import android.widget.EditText
+import android.widget.Toast
+import kotlinx.android.synthetic.main.change_server.view.*
 
 
 class LoginActivity : AppCompatActivity() {
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +89,35 @@ class LoginActivity : AppCompatActivity() {
             this.finish()
         }
         message.setNeutralButton(resources.getString(R.string.cancel)) { _,_ -> }
+        message.setNegativeButton("Change server") { _, _ ->
+            val li = LayoutInflater.from(this)
+            val promptsView = li.inflate(R.layout.change_server, null)
+            val mDialogBuilder = AlertDialog.Builder(this)
+            mDialogBuilder.setView(promptsView)
+            val userIP = promptsView.findViewById(R.id.userIP) as EditText
+            val userPORT = promptsView.findViewById(R.id.userPORT) as EditText
+
+            mDialogBuilder
+            .setPositiveButton(resources.getString(R.string.ok)
+            ) { _, _ ->
+                server.serverIP = promptsView.userIP.text.toString()
+                server.serverPort = promptsView.userPORT.text.toString()
+                Toast.makeText(this, promptsView.userIP.text.toString(), Toast.LENGTH_SHORT).show()
+                server.addTestURL = "http://${server.serverIP}:${server.serverPort}/database/tests/add"
+                server.getAllTestURL = "http://${server.serverIP}:${server.serverPort}/database/tests/getAll"
+                server.editTestURL = "http://${server.serverIP}:${server.serverPort}/database/tests/edit"
+                server.deleteTestURL = "http://${server.serverIP}:${server.serverPort}/database/tests/delete"
+                server.registerUrl = "http://${server.serverIP}:${server.serverPort}/register"
+                server.loginUrl = "http://${server.serverIP}:${server.serverPort}/login"
+            }
+             .setNegativeButton(resources.getString(R.string.cancel)
+             ) { dialog, _ -> dialog.cancel() }
+             val alertDialog = mDialogBuilder.create()
+
+             alertDialog.show()
+        }
+
+        Toast.makeText(this, server.loginUrl, Toast.LENGTH_SHORT).show()
 
         message.create().show()
     }
