@@ -20,9 +20,11 @@ There are three test type:
 
 ## Installing
 
-Download lates app version from [releases](https://github.com/m0ksem/Tests/releases) and install it on your Android phone.
+1. Download lates app version from [releases](https://github.com/m0ksem/Tests/releases) and install it on your Android phone.
 This way you will use only offline mode.
-For using online mode you need a web-server you need a web-server api. Change Server.kt file to connect to your api. Then build app.
+2. For using online mode you need a web-server you need a web-server api.
+3. Change Server.kt file to connect to your api. Then build app. 
+As an example you can use https://github.com/m0ksem/Tests-simple-server-API
 
 ## Authors
 
