@@ -101,6 +101,7 @@
         android:layout_height="0dp"
         android:animateLayoutChanges="false"
         android:clipToPadding="false"
+        android:isScrollContainer="true"
         android:paddingLeft="25dp"
         android:paddingTop="25dp"
         android:paddingRight="25dp"

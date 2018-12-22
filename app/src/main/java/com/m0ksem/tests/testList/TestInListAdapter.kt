@@ -12,7 +12,7 @@ import android.util.Log
 import com.m0ksem.tests.Test
 import com.m0ksem.tests.testCreate.TestCreateActivity
 
-class TestAdapter(private val tests: ArrayList<Test>, private val activity: TestsListActivity) : RecyclerView.Adapter<TestAdapter.ViewHolder>() {
+class TestAdapter(private var tests: ArrayList<Test>, private val activity: TestsListActivity) : RecyclerView.Adapter<TestAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_test, parent, false))
     }

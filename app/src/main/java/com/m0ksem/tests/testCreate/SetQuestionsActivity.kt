@@ -104,9 +104,9 @@ class SetQuestionsActivity : AppCompatActivity()  {
 
     fun deleteAnswer(view: View) {
         val item: ConstraintLayout = view.parent as ConstraintLayout
-        val answers: RecyclerView = view.parent.parent as RecyclerView
-        val answerPos: Int = answers.getChildAdapterPosition(item)
-        val questionPos: Int = list.getChildAdapterPosition(answers.parent as LinearLayout)
+        val answer: RecyclerView = view.parent.parent as RecyclerView
+        val answerPos: Int = answer.getChildAdapterPosition(item)
+        val questionPos: Int = list.getChildAdapterPosition(answer.parent.parent.parent as RecyclerView)
         adapter.deleteAnswer(questionPos, answerPos)
     }
 

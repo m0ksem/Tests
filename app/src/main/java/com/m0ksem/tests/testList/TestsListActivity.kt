@@ -26,9 +26,7 @@ import kotlin.collections.ArrayList
 import android.content.ContentValues
 import android.os.Parcel
 import android.os.Parcelable
-import android.support.v4.view.MotionEventCompat
 import android.util.Log
-import android.view.MotionEvent
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.Response
@@ -60,35 +58,6 @@ class TestsListActivity() : AppCompatActivity(), Parcelable {
         username = parcel.readString()
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-
-        val action: Int = MotionEventCompat.getActionMasked(event)
-
-        return when (action) {
-            MotionEvent.ACTION_DOWN -> {
-                createTestList()
-                true
-            }
-            MotionEvent.ACTION_MOVE -> {
-                Log.d("Debug", "Action was MOVE")
-                true
-            }
-            MotionEvent.ACTION_UP -> {
-                Log.d("Debug", "Action was UP")
-                true
-            }
-            MotionEvent.ACTION_CANCEL -> {
-                Log.d("Debug", "Action was CANCEL")
-                true
-            }
-            MotionEvent.ACTION_OUTSIDE -> {
-                Log.d("Debug", "Movement occurred outside bounds of current screen element")
-                true
-            }
-            else -> super.onTouchEvent(event)
-        }
-    }
-
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,13 +78,13 @@ class TestsListActivity() : AppCompatActivity(), Parcelable {
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.open_activity_button_up))
     }
 
-    fun createTestList() {
+    private fun createTestList() {
         val list:RecyclerView = this.findViewById(R.id.tests_list)
+        list.setHasFixedSize(false)
         list.layoutManager = LinearLayoutManager(this)
-        localDataBase = LocalDataBase(this, "tests")
-        val arrayTest: ArrayList<Test> = ServerDataBase().getAllTests()
-        adapter = TestAdapter(arrayTest, this)
+        adapter = TestAdapter(ServerDataBase().getAllTests(), this)
         list.adapter = adapter
+        list.setHasFixedSize(true)
     }
 
     fun onLogoutClick(view: View) {
@@ -194,7 +163,6 @@ class TestsListActivity() : AppCompatActivity(), Parcelable {
                 for (i in 0 until response.length()) {
                     val test = parceJSONtoTest(response.getJSONObject(i))
                     if (test != null) tests.add(test)
-
                 }
             }, Response.ErrorListener {
                 offline = true
@@ -250,7 +218,7 @@ class TestsListActivity() : AppCompatActivity(), Parcelable {
                 "answers_with_string" -> {
                     val test = StringTest(json.getString("name"), json.getString("author"))
                     test.type = testType
-                    test.id = json.getString("id")
+                    test.id = json.getString("_id")
                     val jsonQuestions = json.getJSONArray("questions")
                     val questions: ArrayList<Test.Question> = ArrayList()
                     for (questionIndex in 0 until jsonQuestions.length()) {
@@ -279,7 +247,7 @@ class TestsListActivity() : AppCompatActivity(), Parcelable {
                 "answers_with_connection" -> {
                     val test = NeuroTest(json.getString("name"), json.getString("author"))
                     test.type = testType
-                    test.id = json.getString("id")
+                    test.id = json.getString("_id")
                     val jsonResults = json.getJSONArray("results")
                     val results: ArrayList<Test.Result> = ArrayList()
                     for (resultIndex in 0 until jsonResults.length()) {

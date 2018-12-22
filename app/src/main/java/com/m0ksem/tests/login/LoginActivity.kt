@@ -22,10 +22,7 @@ import com.android.volley.toolbox.Volley
 import com.m0ksem.tests.R
 import com.m0ksem.tests.testList.TestsListActivity
 import com.m0ksem.tests.Server as server
-import android.R.attr.prompt
 import android.view.LayoutInflater
-import android.content.DialogInterface
-import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.change_server.view.*
 
@@ -94,8 +91,6 @@ class LoginActivity : AppCompatActivity() {
             val promptsView = li.inflate(R.layout.change_server, null)
             val mDialogBuilder = AlertDialog.Builder(this)
             mDialogBuilder.setView(promptsView)
-            val userIP = promptsView.findViewById(R.id.userIP) as EditText
-            val userPORT = promptsView.findViewById(R.id.userPORT) as EditText
 
             mDialogBuilder
             .setPositiveButton(resources.getString(R.string.ok)
